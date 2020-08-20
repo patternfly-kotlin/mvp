@@ -207,3 +207,7 @@ fun main() {
     }.mount("target")
 }
 ```
+
+## Credits
+
+Most of the concepts are taken from [GWTP](https://github.com/ArcBees/GWTP), a great MVP implementation for [GWT](http://www.gwtproject.org/). Kudos to the GWTP team!
