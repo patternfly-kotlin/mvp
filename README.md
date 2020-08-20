@@ -99,8 +99,8 @@ PlaceRequest("apple", mapOf("type" to "granny-smith", "size" to "xxl")) // --> #
 ``` 
 
 Place requests are handled by a place manager. There should be only one place manager in your application. 
-A place manager is created by specifying a default place, and an element which is used in case no presenter 
-could be found for the requested place:
+A place manager is created by specifying a default place, and a function to create an element which is used in case 
+no presenter could be found for the requested place:
 
 ```kotlin
 val placeManager = PlaceManager(PlaceRequest("apple")) {

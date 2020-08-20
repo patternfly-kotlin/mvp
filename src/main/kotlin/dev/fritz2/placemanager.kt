@@ -65,10 +65,12 @@ class PlaceManager(private val default: PlaceRequest, private val notFound: () -
     val placeRequest: PlaceRequest?
         get() = currentPlaceRequest
 
+    /** Specify the tag to use for the presenter's views. */
     fun <E : Element> manage(tag: Tag<E>) {
         manage(tag.domNode)
     }
 
+    /** Specify the element to use for the presenter's views. */
     fun <E : Element> manage(element: E?) {
         target = element
         router.map { place ->
