@@ -98,14 +98,26 @@ PlaceRequest("apple", mapOf("type" to "red-delicious")) // --> #apple;type=red-d
 PlaceRequest("apple", mapOf("type" to "granny-smith", "size" to "xxl")) // --> #apple;type=granny-smith;size=xxl 
 ``` 
 
-Place requests are handled by a place manager. There should be only one place manager in your application. 
-A place manager is created by specifying a default place, and a function to create an element which is used in case 
-no presenter could be found for the requested place:
+Place requests are handled by a place manager. A place manager is created by specifying a default place, and 
+a function to create an element which is used in case no presenter could be found for the requested place:
 
 ```kotlin
 val placeManager = PlaceManager(PlaceRequest("apple")) {
     render {
         p { +"💣" }
+    }
+}
+```
+
+The place manager contains a `Router<PlaceRequest>` which you can use to navigate to places:
+
+```kotlin
+val placeManager = ...
+
+render {
+    button {
+        +"apple"
+        clicks.map { PlaceRequest("apple") } handledBy placeManager.router.navTo
     }
 }
 ```
