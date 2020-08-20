@@ -122,7 +122,7 @@ render {
 }
 ```
 
-Finally, you have to specify a tag, or an element which is used by the place manager to show elements of the views:
+Finally, you have to specify a tag, or an element which is used by the place manager to show the elements of the views:
 
 ```kotlin
 val placeManager = ...
