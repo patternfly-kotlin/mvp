@@ -13,10 +13,10 @@ import org.w3c.dom.HTMLButtonElement
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class CallbackTests {
+class LifecycleTests {
 
     @Test
-    fun callback() = runTest {
+    fun lifecycle() = runTest {
         initPresenter()
         initDocument()
         val placeManager = initPlaceManager()

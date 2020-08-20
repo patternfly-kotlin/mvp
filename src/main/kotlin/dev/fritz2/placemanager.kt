@@ -12,9 +12,10 @@ import kotlinx.dom.clear
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 
+/** A place request models consists of a token and an optional map of parameters. */
 data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 
-internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
+private class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
 
     override fun marshal(route: PlaceRequest): String = buildString {
         append(route.token)
@@ -38,6 +39,15 @@ internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<Pla
     }
 }
 
+/**
+ * Manages the transition between places using a [Router] typed to [PlaceRequest].
+ *
+ * The place manager takes care of finding the right presenter for a place request and calling the presenter's
+ * lifecycle methods.
+ *
+ * The place manager controls a specific element in the DOM tree. When switching from one presenter to another, the
+ * element is cleared and filled with the elements of the new presenter's view.
+ */
 class PlaceManager(private val default: PlaceRequest, private val notFound: () -> Tag<HTMLElement>) {
 
     internal var error: Boolean = false
@@ -47,9 +57,11 @@ class PlaceManager(private val default: PlaceRequest, private val notFound: () -
 
     val router: Router<PlaceRequest> = Router(PlaceRequestRoute(default))
 
+    /** The current presenter. */
     val presenter: Presenter<*>?
         get() = currentPresenter
 
+    /** The current place request. */
     val placeRequest: PlaceRequest?
         get() = currentPlaceRequest
 
@@ -80,10 +92,10 @@ class PlaceManager(private val default: PlaceRequest, private val notFound: () -
     }
 }
 
-internal fun Flow<List<Tag<HTMLElement>>>.bind(placeManager: PlaceManager) =
+private fun Flow<List<Tag<HTMLElement>>>.bind(placeManager: PlaceManager) =
     PlaceManagerMountPoint(this, placeManager)
 
-internal class PlaceManagerMountPoint(upstream: Flow<List<Tag<HTMLElement>>>, private val placeManager: PlaceManager) :
+private class PlaceManagerMountPoint(upstream: Flow<List<Tag<HTMLElement>>>, private val placeManager: PlaceManager) :
     SingleMountPoint<List<Tag<HTMLElement>>>(upstream) {
 
     override fun set(value: List<Tag<HTMLElement>>, last: List<Tag<HTMLElement>>?) {

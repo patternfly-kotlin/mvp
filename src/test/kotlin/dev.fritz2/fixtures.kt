@@ -4,8 +4,11 @@ import dev.fritz2.PresenterState.BIND
 import dev.fritz2.PresenterState.HIDE
 import dev.fritz2.PresenterState.PREPARE_FROM_REQUEST
 import dev.fritz2.PresenterState.SHOW
+import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.render
 import kotlinx.browser.document
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLParagraphElement
 
 // ------------------------------------------------------ constants
 
@@ -75,38 +78,35 @@ abstract class RecordingPresenter<V : View> : Presenter<V> {
     }
 }
 
-class ApplePresenter : RecordingPresenter<AppleView>() {
-    override val token = "apple"
-    override val view = AppleView()
-}
-
 class AppleView : View {
-    override val elements = listOf(
+    override val elements: List<Tag<HTMLElement>> = listOf(
         render {
             p(id = contentId) { +"🍎" }
         })
 }
 
-class BananaPresenter : RecordingPresenter<BananaView>() {
-    override val token = "banana"
-    override val view = BananaView()
+class ApplePresenter : RecordingPresenter<AppleView>() {
+    override val view: AppleView = AppleView()
 }
 
 class BananaView : View {
-    override val elements = listOf(
+    override val elements: List<Tag<HTMLParagraphElement>> = listOf(
         render {
             p(id = contentId) { +"🍌" }
         })
 }
 
-class PineapplePresenter : RecordingPresenter<PineappleView>() {
-    override val token = "pineapple"
-    override val view = PineappleView()
+class BananaPresenter : RecordingPresenter<BananaView>() {
+    override val view: BananaView = BananaView()
 }
 
 class PineappleView : View {
-    override val elements = listOf(
+    override val elements: List<Tag<HTMLParagraphElement>> = listOf(
         render {
             p(id = contentId) { +"🍍" }
         })
+}
+
+class PineapplePresenter : RecordingPresenter<PineappleView>() {
+    override val view: PineappleView = PineappleView()
 }

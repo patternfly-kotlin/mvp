@@ -4,39 +4,60 @@ import dev.fritz2.dom.Tag
 import org.w3c.dom.HTMLElement
 
 /**
- * A presenter should contains the
+ * A presenter should contain the business logic for a specific use case. It should not contain any view related code
+ * like (web) components or DOM elements. Instead, it should focus on the actual use case, work on the model, listen to
+ * events and update its view.
+ *
+ * Presenters are singletons which are created lazily and which are then reused. They're bound to a specific string
+ * token (aka place). They need to be registered using a token, and a function to create the presenter.
+ * Use the presenter's companion object to register presenters:
+ *
+ * ```
+ * class ApplePresenter : Presenter<AppleView> {
+ *     override val view = AppleView()
+ * }
+ *
+ * class AppleView : View {
+ *     override val elements = listOf(
+ *         render {
+ *             p { +"🍎" }
+ *         })
+ * }
+ *
+ * Presenter.register("apple", ::ApplePresenter)
+ * ```
  *
  * @param V the type of the presenter's view
  */
-interface Presenter<V : View> {
-    val token: String
+interface Presenter<out V : View> {
     val view: V
 
-    /** Called once the presenter is created. */
+    /** Called once, after the presenter has been created. Override this method to implement one-time setup code. */
     fun bind() {}
 
     /**
-     * Called each time before the presenter is shown.
+     * Called each time before the presenter is shown (before [show] is called).
      *
-     * Override this method if you want to use the data in the [PlaceRequest]
+     * Override this method if you want to use the data in [PlaceRequest].
      */
     fun prepareFromRequest(place: PlaceRequest) {}
 
-    /** Called each time after the view has been attached to the DOM. */
+    /** Called each time after the view has been attached to the DOM (after [prepareFromRequest]). */
     fun show() {}
 
     /** Called each time before the view is removed from the DOM. */
     fun hide() {}
 
+    /** Registry for all presenters. Used to register and find presenters. */
     companion object {
         @PublishedApi
-        internal val registry: MutableMap<String, () -> Presenter<out View>> = mutableMapOf()
+        internal val registry: MutableMap<String, () -> Presenter<View>> = mutableMapOf()
 
         @PublishedApi
-        internal val instances: MutableMap<String, Presenter<out View>> = mutableMapOf()
+        internal val instances: MutableMap<String, Presenter<View>> = mutableMapOf()
 
-        /** Registers the token to the function creating the presenter (e.g. the presenter constructor) */
-        fun register(token: String, presenter: () -> Presenter<out View>) {
+        /** Registers the function to create a presenter to a specific token. */
+        fun register(token: String, presenter: () -> Presenter<View>) {
             registry[token] = presenter
         }
 
@@ -47,13 +68,13 @@ interface Presenter<V : View> {
          * Returns the presenter instance for the given token.
          *
          * If the presenter has been registered, but has not yet been created, the presenter is created by calling
-         * the function given at [register]. After that [bind] is called and the instance is returned.
+         * the function given at [register]. After that [Presenter.bind] is called and the instance is returned.
          *
          * If the presenter has already been created, its instance is returned.
          *
          * If no presenter is found for [token], `null` is returned.
          */
-        inline fun <reified P : Presenter<out View>> lookup(token: String): P? {
+        inline fun <reified P : Presenter<View>> lookup(token: String): P? {
             return if (token in instances) {
                 val presenter = instances[token]
                 if (presenter is P) {
@@ -80,6 +101,12 @@ interface Presenter<V : View> {
     }
 }
 
+/**
+ * A view should just define the visual representation and should not contain business logic. A view is always bound
+ * to a specific [Presenter].
+ */
 interface View {
+
+    /** A list of tags defining the visual representation of the view. */
     val elements: List<Tag<HTMLElement>>
 }
