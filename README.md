@@ -9,7 +9,7 @@ Small MVP implementation based on [fritz2](https://www.fritz2.dev/).
 ### Model
 
 You are free to use any kind of model you want to. There are no restrictions in the API. Usually you'd use some kind 
-of data classes and get or create them work in the presenter and pass them to the view. 
+of data classes which you get or create in the presenter and pass them to the view. 
 
 ### View
 
@@ -25,8 +25,8 @@ A view should just define the visual representation and should not contain busin
 
 ### Presenter
 
-The presenter is a simple interface with a single property you need to implement. Besides, the presenter has several 
-methods which you can override to take part of the presenter's lifecycle.  
+The presenter is a simple interface with a single property you need to implement. Besides, the presenter has methods 
+which you can override to take part in the presenter's lifecycle.  
 
 ```kotlin
 interface Presenter<out V : View> {
@@ -43,9 +43,8 @@ A presenter should contain the business logic for a specific use case. It should
 like (web) components or DOM elements. Instead, it should focus on the actual use case, work on the model, listen to
 events and update its view.
 
-Presenters are singletons which are created lazily and which are then reused. They're bound to a specific string token 
-(aka place). They need to be registered using a token, and a function to create the presenter. Use the presenter's 
-companion object to register presenters:
+Presenters are singletons which are created lazily and which are then reused. They're bound to a specific token 
+(aka place). They need to be registered using the token, and a function to create the presenter.
 
 ```kotlin
 class AppleView : View {
@@ -68,7 +67,7 @@ The place manager (see below) manages the lifecycle of presenters. Override one 
 in the lifecycle of a presenter: 
 
 1. `bind()`  
-    Called once, after the presenter has been created. Override this method to implement one-time setup code.
+    Called once, after the presenter has been created. Override this method to execute one-time setup code.
     
 1. `prepareFromRequest(request: PlaceRequest)`  
     Called each time, before the presenter is shown. Override this method if you want to use the data in the 
@@ -111,7 +110,7 @@ val placeManager = PlaceManager(PlaceRequest("apple")) {
 }
 ```
 
-Finally, you have to specify a tag or an element which is used by the place manager uses to show the presenter's views:
+Finally, you have to specify a tag, or an element which is used by the place manager to show elements of the views:
 
 ```kotlin
 val placeManager = ...
@@ -127,11 +126,12 @@ render {
   
 When a place request is handled by the place manager, 
 
-1. the place manager tries to find a presenter which matches the place request's token
+1. the place manager tries to find the presenter which matches the place request's token
 1. creates and binds the presenter (if necessary)
-1. calls `Presenter.hide()` for the current presenter
+1. calls `Presenter.hide()` for the current presenter (if any)
 1. calls `Presenter.prepareFromRequest()` for the new presenter
-1. attaches the elements of the new presenter's view to the DOM tree
+1. clears the element managed by the place manager
+1. attaches the elements of the new presenter's view
 1. calls `Presenter.show()` for the new presenter
 
 ## Sample
