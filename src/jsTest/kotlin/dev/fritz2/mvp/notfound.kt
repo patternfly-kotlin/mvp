@@ -1,4 +1,4 @@
-package dev.fritz2
+package dev.fritz2.mvp
 
 import dev.fritz2.binding.handledBy
 import dev.fritz2.dom.html.render
@@ -6,7 +6,6 @@ import dev.fritz2.dom.mount
 import kotlinx.browser.document
 import kotlinx.coroutines.delay
 import org.w3c.dom.HTMLButtonElement
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -1,9 +1,9 @@
-package dev.fritz2
+package dev.fritz2.mvp
 
-import dev.fritz2.PresenterState.BIND
-import dev.fritz2.PresenterState.HIDE
-import dev.fritz2.PresenterState.PREPARE_FROM_REQUEST
-import dev.fritz2.PresenterState.SHOW
+import dev.fritz2.mvp.PresenterState.BIND
+import dev.fritz2.mvp.PresenterState.HIDE
+import dev.fritz2.mvp.PresenterState.PREPARE_FROM_REQUEST
+import dev.fritz2.mvp.PresenterState.SHOW
 import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.render
 import kotlinx.browser.document

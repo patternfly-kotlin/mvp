@@ -1,19 +1,19 @@
 # fritz2-mvp
 
-Small MVP implementation based on [fritz2](https://www.fritz2.dev/).
+MVP implementation based on [fritz2](https://www.fritz2.dev/).
 
 ## Building Blocks
 
-`fritz2-mvp` comes with just a few classes and provides a very lightweight and straight forward MVP implementation:
+fritz2-mvp comes with just a few classes and provides a very lightweight and straight forward MVP implementation:
 
 ### Model
 
 You are free to use any kind of model you want to. There are no restrictions in the API. Usually you'd use some kind 
-of data classes which you get or create in the presenter and pass them to the view. 
+of data classes which you create or fetch in the presenter. 
 
 ### View
 
-The view is a simple interface with a single property you need to implement.
+The view is a simple interface with just a single property you need to implement.
 
 ```kotlin
 interface View {
@@ -25,7 +25,7 @@ A view should just define the visual representation and should not contain busin
 
 ### Presenter
 
-The presenter is a simple interface with a single property you need to implement. Besides, the presenter has methods 
+The presenter is a simple interface with one property you need to implement. Besides, the presenter provides methods 
 which you can override to take part in the presenter's lifecycle.  
 
 ```kotlin
@@ -90,7 +90,7 @@ A place request is a simple data class with a token and an optional map of param
 data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 ```
 
-Place requests are (un)marshalled to location hashes:
+Place requests are (un)marshalled to URL fragments:
 
 ```kotlin
 PlaceRequest("apple") // --> #apple

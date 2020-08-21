@@ -1,4 +1,4 @@
-package dev.fritz2
+package dev.fritz2.mvp
 
 import dev.fritz2.dom.Tag
 import org.w3c.dom.HTMLElement

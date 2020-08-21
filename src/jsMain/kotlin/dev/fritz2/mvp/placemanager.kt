@@ -1,42 +1,22 @@
-package dev.fritz2
+package dev.fritz2.mvp
 
 import dev.fritz2.binding.SingleMountPoint
 import dev.fritz2.dom.Tag
 import dev.fritz2.routing.Route
 import dev.fritz2.routing.Router
-import dev.fritz2.routing.decodeURIComponent
-import dev.fritz2.routing.encodeURIComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.dom.clear
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 
-/** A place request models consists of a token and an optional map of parameters. */
-data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
+internal actual external fun decodeURIComponent(encodedURI: String): String
+internal actual external fun encodeURIComponent(decodedURI: String): String
 
 private class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
-
-    override fun marshal(route: PlaceRequest): String = buildString {
-        append(route.token)
-        if (route.params.isNotEmpty()) {
-            route.params
-                .map { (key, value) -> "$key=${encodeURIComponent(value)}" }
-                .joinTo(this, ";", ";")
-        }
-    }
-
-    override fun unmarshal(hash: String): PlaceRequest {
-        val token = hash.substringBefore(';')
-        val params = hash.substringAfter(';', "")
-            .split(";")
-            .filter { it.isNotEmpty() }
-            .associate {
-                val (left, right) = it.split("=")
-                left to decodeURIComponent(right)
-            }
-        return PlaceRequest(token, params)
-    }
+    private val marshalling = PlaceRequestMarshalling()
+    override fun marshal(route: PlaceRequest): String = marshalling.marshal(route)
+    override fun unmarshal(hash: String): PlaceRequest = marshalling.unmarshal(hash)
 }
 
 /**

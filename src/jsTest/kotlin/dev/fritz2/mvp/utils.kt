@@ -1,4 +1,4 @@
-package dev.fritz2
+package dev.fritz2.mvp
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay

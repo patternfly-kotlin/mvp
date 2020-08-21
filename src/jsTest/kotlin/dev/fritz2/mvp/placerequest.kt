@@ -1,4 +1,4 @@
-package dev.fritz2
+package dev.fritz2.mvp
 
 import dev.fritz2.binding.handledBy
 import dev.fritz2.dom.html.render
