@@ -46,3 +46,16 @@ kotlin {
         }
     }
 }
+
+tasks {
+    dokkaHtml {
+        dokkaSourceSets {
+            register("commonMain") {
+                platform = "js"
+            }
+            register("jsMain") {
+                platform = "js"
+            }
+        }
+    }
+}
