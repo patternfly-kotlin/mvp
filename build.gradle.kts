@@ -27,13 +27,6 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
         val jsMain by getting {
             dependencies {
                 implementation("dev.fritz2:core:0.8-SNAPSHOT")
@@ -50,10 +43,8 @@ kotlin {
 tasks {
     dokkaHtml {
         dokkaSourceSets {
-            register("commonMain") {
-                platform = "js"
-            }
             register("jsMain") {
+                displayName = "JS"
                 platform = "js"
             }
         }
