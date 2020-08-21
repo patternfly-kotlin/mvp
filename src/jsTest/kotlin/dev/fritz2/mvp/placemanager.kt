@@ -9,7 +9,7 @@ import org.w3c.dom.HTMLButtonElement
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class PlaceRequestTests {
+class PlaceManagerTests {
 
     @Test
     fun placeRequest() = runTest {

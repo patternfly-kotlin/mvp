@@ -3,7 +3,7 @@ package dev.fritz2.mvp
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class PlaceRequestMarshallingTest {
+class PlaceRequestTests {
 
     @Test
     fun empty() {
