@@ -1,7 +1,6 @@
 package dev.fritz2.mvp
 
-import dev.fritz2.dom.Tag
-import org.w3c.dom.HTMLElement
+import org.w3c.dom.Element
 
 /**
  * A presenter should contain the business logic for a specific use case. It should not contain any view related code
@@ -29,27 +28,27 @@ import org.w3c.dom.HTMLElement
  *
  * @param V the type of the presenter's view
  */
-interface Presenter<out V : View> {
-    val view: V
+public interface Presenter<out V : View> {
+    public suspend fun view(): V
 
     /** Called once, after the presenter has been created. Override this method to implement one-time setup code. */
-    fun bind() {}
+    public fun bind() {}
 
     /**
      * Called each time before the presenter is shown (before [show] is called).
      *
      * Override this method if you want to use the data in [PlaceRequest].
      */
-    fun prepareFromRequest(place: PlaceRequest) {}
+    public fun prepareFromRequest(place: PlaceRequest) {}
 
     /** Called each time after the view has been attached to the DOM (after [prepareFromRequest]). */
-    fun show() {}
+    public fun show() {}
 
     /** Called each time before the view is removed from the DOM. */
-    fun hide() {}
+    public fun hide() {}
 
     /** Registry for all presenters. Used to register and find presenters. */
-    companion object {
+    public companion object {
         @PublishedApi
         internal val registry: MutableMap<String, () -> Presenter<View>> = mutableMapOf()
 
@@ -57,12 +56,12 @@ interface Presenter<out V : View> {
         internal val instances: MutableMap<String, Presenter<View>> = mutableMapOf()
 
         /** Registers the function to create a presenter to a specific token. */
-        fun register(token: String, presenter: () -> Presenter<View>) {
+        public fun register(token: String, presenter: () -> Presenter<View>) {
             registry[token] = presenter
         }
 
         /** Checks if the token has been registered. */
-        operator fun contains(token: String): Boolean = token in registry
+        public operator fun contains(token: String): Boolean = token in registry
 
         /**
          * Returns the presenter instance for the given token.
@@ -74,7 +73,7 @@ interface Presenter<out V : View> {
          *
          * If no presenter is found for [token], `null` is returned.
          */
-        inline fun <reified P : Presenter<View>> lookup(token: String): P? {
+        public inline fun <reified P : Presenter<View>> lookup(token: String): P? {
             return if (token in instances) {
                 val presenter = instances[token]
                 if (presenter is P) {
@@ -105,8 +104,8 @@ interface Presenter<out V : View> {
  * A view should just define the visual representation and should not contain business logic. A view is always bound
  * to a specific [Presenter].
  */
-interface View {
+public interface View {
 
     /** A list of tags defining the visual representation of the view. */
-    val elements: List<Tag<HTMLElement>>
+    public val elements: List<Element>
 }

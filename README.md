@@ -1,4 +1,4 @@
-# fritz2-mvp
+# Fritz2 MVP
 
 MVP implementation based on [fritz2](https://www.fritz2.dev/).
 

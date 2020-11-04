@@ -1,51 +1,54 @@
 plugins {
-    kotlin("multiplatform") version "1.4.0"
-    id("org.jetbrains.dokka") version "1.4.0-rc"
-    id("maven-publish")
+    kotlin("js") version PluginVersions.js
+    id("org.jetbrains.dokka") version PluginVersions.js
+    `maven-publish`
 }
 
-group = "dev.fritz2"
-version = "0.8-SNAPSHOT"
+group = Constants.group
+version = Constants.version
 
 repositories {
     mavenLocal()
     mavenCentral()
     maven("https://oss.jfrog.org/artifactory/jfrog-dependencies")
-    jcenter()
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+}
+
+dependencies {
+    fritz2()
+    implementation(Dependencies.elemento)
+    kotest()
 }
 
 kotlin {
     js {
+        compilations.named("main") {
+            kotlinOptions {
+                freeCompilerArgs += "-Xexplicit-api=strict"
+            }
+        }
         browser {
             testTask {
                 useKarma {
                     useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
                 }
-            }
-        }
-    }
-
-    sourceSets {
-        val jsMain by getting {
-            dependencies {
-                implementation("dev.fritz2:core:0.8-SNAPSHOT")
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
             }
         }
     }
 }
 
-tasks {
-    dokkaHtml {
-        dokkaSourceSets {
-            register("jsMain") {
-                displayName = "JS"
-                platform = "js"
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from(kotlin.sourceSets.main.get().kotlin)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("kotlin") {
+            from(components["kotlin"])
+            artifact(tasks["sourcesJar"])
+            pom {
+                defaultPom()
             }
         }
     }

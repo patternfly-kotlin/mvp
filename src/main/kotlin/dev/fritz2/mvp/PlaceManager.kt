@@ -13,7 +13,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 
 /** A place request models consists of a token and an optional map of parameters. */
-data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
+public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 
 internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
 
@@ -48,30 +48,30 @@ internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<Pla
  * The place manager controls a specific element in the DOM tree. When switching from one presenter to another, the
  * element is cleared and filled with the elements of the new presenter's view.
  */
-class PlaceManager(private val default: PlaceRequest, private val notFound: () -> Tag<HTMLElement>) {
+public class PlaceManager(private val default: PlaceRequest, private val notFound: () -> Tag<HTMLElement>) {
 
     internal var error: Boolean = false
     internal var target: Element? = null
     internal var currentPresenter: Presenter<*>? = null
     private var currentPlaceRequest: PlaceRequest? = null
 
-    val router: Router<PlaceRequest> = Router(PlaceRequestRoute(default))
+    public val router: Router<PlaceRequest> = Router(PlaceRequestRoute(default))
 
     /** The current presenter. */
-    val presenter: Presenter<*>?
+    public val presenter: Presenter<*>?
         get() = currentPresenter
 
     /** The current place request. */
-    val placeRequest: PlaceRequest?
+    public val placeRequest: PlaceRequest?
         get() = currentPlaceRequest
 
     /** Specify the tag to use for the presenter's views. */
-    fun <E : Element> manage(tag: Tag<E>) {
+    public fun <E : Element> manage(tag: Tag<E>) {
         manage(tag.domNode)
     }
 
     /** Specify the element to use for the presenter's views. */
-    fun <E : Element> manage(element: E?) {
+    public fun <E : Element> manage(element: E?) {
         target = element
         router.map { place ->
             error = false
@@ -84,27 +84,27 @@ class PlaceManager(private val default: PlaceRequest, private val notFound: () -
                 currentPresenter = presenter
                 currentPlaceRequest = nonEmptyPlace
                 presenter.prepareFromRequest(place)
-                presenter.view.elements
+                presenter.view().elements
             } else {
                 error = true
                 console.error("No presenter found for $nonEmptyPlace!")
-                listOf(notFound())
+                listOf(notFound().domNode)
             }
         }.bind(this)
     }
 }
 
-private fun Flow<List<Tag<HTMLElement>>>.bind(placeManager: PlaceManager) =
+private fun Flow<List<Element>>.bind(placeManager: PlaceManager) =
     PlaceManagerMountPoint(this, placeManager)
 
-private class PlaceManagerMountPoint(upstream: Flow<List<Tag<HTMLElement>>>, private val placeManager: PlaceManager) :
-    SingleMountPoint<List<Tag<HTMLElement>>>(upstream) {
+private class PlaceManagerMountPoint(upstream: Flow<List<Element>>, private val placeManager: PlaceManager) :
+    SingleMountPoint<List<Element>>(upstream) {
 
-    override fun set(value: List<Tag<HTMLElement>>, last: List<Tag<HTMLElement>>?) {
+    override fun set(value: List<Element>, last: List<Element>?) {
         placeManager.target?.let {
             it.clear()
-            value.forEach { tag ->
-                it.appendChild(tag.domNode)
+            value.forEach { element ->
+                it.appendChild(element)
             }
         }
         if (!placeManager.error) {
