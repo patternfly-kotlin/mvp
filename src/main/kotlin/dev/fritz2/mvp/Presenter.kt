@@ -29,7 +29,7 @@ import org.w3c.dom.Element
  * @param V the type of the presenter's view
  */
 public interface Presenter<out V : View> {
-    public suspend fun view(): V
+    public val view: V
 
     /** Called once, after the presenter has been created. Override this method to implement one-time setup code. */
     public fun bind() {}
@@ -106,6 +106,6 @@ public interface Presenter<out V : View> {
  */
 public interface View {
 
-    /** A list of tags defining the visual representation of the view. */
+    /** A list of elements defining the visual representation of the view. */
     public val elements: List<Element>
 }

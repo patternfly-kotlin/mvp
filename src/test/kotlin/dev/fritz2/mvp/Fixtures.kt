@@ -84,7 +84,7 @@ class AppleView : View {
 }
 
 class ApplePresenter : RecordingPresenter<AppleView>() {
-    override suspend fun view(): AppleView = AppleView()
+    override val view: AppleView = AppleView()
 }
 
 class BananaView : View {
@@ -94,7 +94,7 @@ class BananaView : View {
 }
 
 class BananaPresenter : RecordingPresenter<BananaView>() {
-    override suspend fun view(): BananaView = BananaView()
+    override val view: BananaView = BananaView()
 }
 
 class PineappleView : View {
@@ -104,5 +104,5 @@ class PineappleView : View {
 }
 
 class PineapplePresenter : RecordingPresenter<PineappleView>() {
-    override suspend fun view(): PineappleView = PineappleView()
+    override val view: PineappleView = PineappleView()
 }

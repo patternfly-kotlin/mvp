@@ -84,7 +84,7 @@ public class PlaceManager(private val default: PlaceRequest, private val notFoun
                 currentPresenter = presenter
                 currentPlaceRequest = nonEmptyPlace
                 presenter.prepareFromRequest(place)
-                presenter.view().elements
+                presenter.view.elements
             } else {
                 error = true
                 console.error("No presenter found for $nonEmptyPlace!")
