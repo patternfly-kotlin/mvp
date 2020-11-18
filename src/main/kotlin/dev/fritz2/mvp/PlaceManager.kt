@@ -1,16 +1,19 @@
 package dev.fritz2.mvp
 
-import dev.fritz2.binding.SingleMountPoint
 import dev.fritz2.dom.Tag
+import dev.fritz2.dom.html.RenderContext
+import dev.fritz2.dom.html.render
+import dev.fritz2.dom.mountDomNodeList
 import dev.fritz2.routing.Route
 import dev.fritz2.routing.Router
 import dev.fritz2.routing.decodeURIComponent
 import dev.fritz2.routing.encodeURIComponent
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
-import kotlinx.dom.clear
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import org.w3c.dom.Element
-import org.w3c.dom.HTMLElement
 
 /** A place request models consists of a token and an optional map of parameters. */
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
@@ -23,8 +26,8 @@ internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<Pla
             .split(";")
             .filter { it.isNotEmpty() }
             .associate {
-                val (left, right) = it.split("=")
-                left to decodeURIComponent(right)
+                val (key, value) = it.split("=")
+                key to decodeURIComponent(value)
             }
         return PlaceRequest(token, params)
     }
@@ -48,10 +51,18 @@ internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<Pla
  * The place manager controls a specific element in the DOM tree. When switching from one presenter to another, the
  * element is cleared and filled with the elements of the new presenter's view.
  */
-public class PlaceManager(private val default: PlaceRequest, private val notFound: () -> Tag<HTMLElement>) {
-
+public class PlaceManager(
+    private val default: PlaceRequest,
+    private val notFound: RenderContext.(PlaceRequest) -> Unit = {
+        h1 {
+            +"404"
+        }
+        p {
+            +"${it.token} not found"
+        }
+    }
+) {
     internal var error: Boolean = false
-    internal var target: Element? = null
     internal var currentPresenter: Presenter<*>? = null
     private var currentPlaceRequest: PlaceRequest? = null
 
@@ -71,44 +82,35 @@ public class PlaceManager(private val default: PlaceRequest, private val notFoun
     }
 
     /** Specify the element to use for the presenter's views. */
+    @OptIn(ExperimentalCoroutinesApi::class)
     public fun <E : Element> manage(element: E?) {
-        target = element
-        router.map { place ->
-            error = false
-            val nonEmptyPlace = if (place.token.isEmpty()) default else place
-            val presenter = Presenter.lookup<Presenter<View>>(nonEmptyPlace.token)
-            if (presenter != null) {
-                if (presenter !== currentPresenter) {
-                    currentPresenter?.hide()
+        if (element != null) {
+            mountDomNodeList(Job(), element, router.map { place ->
+                error = false
+                val nonEmptyPlace = if (place.token.isEmpty()) default else place
+                val presenter = Presenter.lookup<Presenter<View>>(nonEmptyPlace.token)
+                if (presenter != null) {
+                    if (presenter !== currentPresenter) {
+                        currentPresenter?.hide()
+                    }
+                    currentPresenter = presenter
+                    currentPlaceRequest = nonEmptyPlace
+                    presenter.prepareFromRequest(place)
+                    render {
+                        presenter.view.content(this)
+                    }
+                } else {
+                    error = true
+                    console.error("No presenter found for $nonEmptyPlace!")
+                    render {
+                        notFound(nonEmptyPlace)
+                    }
                 }
-                currentPresenter = presenter
-                currentPlaceRequest = nonEmptyPlace
-                presenter.prepareFromRequest(place)
-                presenter.view.elements
-            } else {
-                error = true
-                console.error("No presenter found for $nonEmptyPlace!")
-                listOf(notFound().domNode)
-            }
-        }.bind(this)
-    }
-}
-
-private fun Flow<List<Element>>.bind(placeManager: PlaceManager) =
-    PlaceManagerMountPoint(this, placeManager)
-
-private class PlaceManagerMountPoint(upstream: Flow<List<Element>>, private val placeManager: PlaceManager) :
-    SingleMountPoint<List<Element>>(upstream) {
-
-    override fun set(value: List<Element>, last: List<Element>?) {
-        placeManager.target?.let {
-            it.clear()
-            value.forEach { element ->
-                it.appendChild(element)
-            }
-        }
-        if (!placeManager.error) {
-            placeManager.currentPresenter?.show()
+            }.onEach {
+                if (!error) {
+                    currentPresenter?.show()
+                }
+            })
         }
     }
 }

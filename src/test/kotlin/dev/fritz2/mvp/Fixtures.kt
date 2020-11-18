@@ -1,20 +1,17 @@
 package dev.fritz2.mvp
 
-import dev.fritz2.dom.html.render
-import dev.fritz2.elemento.elements
 import dev.fritz2.mvp.PresenterState.BIND
 import dev.fritz2.mvp.PresenterState.HIDE
 import dev.fritz2.mvp.PresenterState.PREPARE_FROM_REQUEST
 import dev.fritz2.mvp.PresenterState.SHOW
 import kotlinx.browser.document
-import org.w3c.dom.Element
 
 // ------------------------------------------------------ constants
 
 const val navigationId = "navigation"
 const val mainId = "main"
 const val contentId = "content"
-const val wait = 100L
+const val wait = 200L
 
 // ------------------------------------------------------ html
 
@@ -45,9 +42,7 @@ fun initPresenter() {
 
 fun initPlaceManager(): PlaceManager {
     val placeManager = PlaceManager(PlaceRequest("apple")) {
-        render {
-            p(id = contentId) { +"💣" }
-        }
+        p(id = contentId) { +"💣" }
     }
     placeManager.manage(document.getElementById(mainId))
     return placeManager
@@ -77,19 +72,13 @@ abstract class RecordingPresenter<V : View> : Presenter<V> {
     }
 }
 
-class AppleView : View {
-    override val elements: List<Element> = elements {
-        p(id = contentId) { +"🍎" }
-    }
-}
-
 class ApplePresenter : RecordingPresenter<AppleView>() {
     override val view: AppleView = AppleView()
 }
 
-class BananaView : View {
-    override val elements: List<Element> = elements {
-        p(id = contentId) { +"🍌" }
+class AppleView : View {
+    override val content: ViewContent = {
+        p(id = contentId) { +"🍎" }
     }
 }
 
@@ -97,12 +86,18 @@ class BananaPresenter : RecordingPresenter<BananaView>() {
     override val view: BananaView = BananaView()
 }
 
-class PineappleView : View {
-    override val elements: List<Element> = elements {
-        p(id = contentId) { +"🍍" }
+class BananaView : View {
+    override val content: ViewContent = {
+        p(id = contentId) { +"🍌" }
     }
 }
 
 class PineapplePresenter : RecordingPresenter<PineappleView>() {
     override val view: PineappleView = PineappleView()
+}
+
+class PineappleView : View {
+    override val content: ViewContent = {
+        p(id = contentId) { +"🍍" }
+    }
 }

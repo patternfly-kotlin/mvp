@@ -1,6 +1,6 @@
 package dev.fritz2.mvp
 
-import org.w3c.dom.Element
+import dev.fritz2.dom.html.RenderContext
 
 /**
  * A presenter should contain the business logic for a specific use case. It should not contain any view related code
@@ -17,10 +17,9 @@ import org.w3c.dom.Element
  * }
  *
  * class AppleView : View {
- *     override val elements = listOf(
- *         render {
- *             p { +"🍎" }
- *         })
+ *     override val content: ViewContent = {
+ *         p(id = contentId) { +"🍎" }
+ *     }
  * }
  *
  * Presenter.register("apple", ::ApplePresenter)
@@ -101,11 +100,32 @@ public interface Presenter<out V : View> {
 }
 
 /**
+ * Views should implement this interface if they need a reference to their [Presenter].
+ *
+ * ```
+ * class ApplePresenter : Presenter<AppleView> {
+ *     override val view = AppleView(this)
+ * }
+ *
+ * class AppleView(override var presenter: ApplePresenter) : View, WithPresenter<ApplePresenter> {
+ *     override val content: ViewContent = {
+ *         p(id = contentId) { +"🍎" }
+ *     }
+ * }
+ * ```
+ */
+public interface WithPresenter<P : Presenter<View>> {
+    public var presenter: P
+}
+
+public typealias ViewContent = RenderContext.() -> Unit
+
+/**
  * A view should just define the visual representation and should not contain business logic. A view is always bound
  * to a specific [Presenter].
  */
 public interface View {
 
-    /** A list of elements defining the visual representation of the view. */
-    public val elements: List<Element>
+    /** A function defining the visual representation of the view. */
+    public val content: ViewContent
 }

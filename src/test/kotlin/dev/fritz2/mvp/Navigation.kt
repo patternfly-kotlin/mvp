@@ -1,7 +1,5 @@
 package dev.fritz2.mvp
 
-import dev.fritz2.binding.const
-import dev.fritz2.binding.handledBy
 import dev.fritz2.dom.html.render
 import dev.fritz2.dom.mount
 import kotlinx.browser.document
@@ -74,19 +72,19 @@ class NavigationTests {
                 li {
                     a(id = "apple") {
                         +"apple"
-                        href = const("#apple")
+                        href("#apple")
                     }
                 }
                 li {
                     a(id = "banana") {
                         +"banana"
-                        href = const("#banana")
+                        href("#banana")
                     }
                 }
                 li {
                     a(id = "pineapple") {
                         +"pineapple"
-                        href = const("#pineapple")
+                        href("#pineapple")
                     }
                 }
             }

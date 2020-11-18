@@ -24,7 +24,7 @@ kotlin {
     js {
         compilations.named("main") {
             kotlinOptions {
-                freeCompilerArgs = listOf("-Xexplicit-api=strict")
+                freeCompilerArgs = listOf("-Xexplicit-api=strict", "-Xopt-in=kotlin.RequiresOptIn")
             }
         }
         browser {
