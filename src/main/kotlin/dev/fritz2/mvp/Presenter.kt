@@ -36,7 +36,7 @@ public interface Presenter<out V : View> {
     /**
      * Called each time before the presenter is shown (before [show] is called).
      *
-     * Override this method if you want to use the data in [PlaceRequest].
+     * Override this method if you want to use data from [PlaceRequest].
      */
     public fun prepareFromRequest(place: PlaceRequest) {}
 
@@ -46,7 +46,7 @@ public interface Presenter<out V : View> {
     /** Called each time before the view is removed from the DOM. */
     public fun hide() {}
 
-    /** Registry for all presenters. Used to register and find presenters. */
+    /** Registry for all presenters. Use this object to register and find presenters. */
     public companion object {
         @PublishedApi
         internal val registry: MutableMap<String, () -> Presenter<View>> = mutableMapOf()
@@ -54,7 +54,7 @@ public interface Presenter<out V : View> {
         @PublishedApi
         internal val instances: MutableMap<String, Presenter<View>> = mutableMapOf()
 
-        /** Registers the function to create a presenter to a specific token. */
+        /** Registers the function to create a presenter for a specific token. */
         public fun register(token: String, presenter: () -> Presenter<View>) {
             registry[token] = presenter
         }
@@ -63,7 +63,7 @@ public interface Presenter<out V : View> {
         public operator fun contains(token: String): Boolean = token in registry
 
         /**
-         * Returns the presenter instance for the given token.
+         * Returns the presenter *instance* for the given token.
          *
          * If the presenter has been registered, but has not yet been created, the presenter is created by calling
          * the function given at [register]. After that [Presenter.bind] is called and the instance is returned.
@@ -100,14 +100,14 @@ public interface Presenter<out V : View> {
 }
 
 /**
- * Views should implement this interface if they need a reference to their [Presenter].
+ * Views can implement this interface if they need a reference to their [Presenter].
  *
  * ```
  * class ApplePresenter : Presenter<AppleView> {
  *     override val view = AppleView(this)
  * }
  *
- * class AppleView(override var presenter: ApplePresenter) : View, WithPresenter<ApplePresenter> {
+ * class AppleView(override val presenter: ApplePresenter) : View, WithPresenter<ApplePresenter> {
  *     override val content: ViewContent = {
  *         p(id = contentId) { +"🍎" }
  *     }
@@ -115,9 +115,10 @@ public interface Presenter<out V : View> {
  * ```
  */
 public interface WithPresenter<P : Presenter<View>> {
-    public var presenter: P
+    public val presenter: P
 }
 
+/** Alias for the lambda which creates the view content. */
 public typealias ViewContent = RenderContext.() -> Unit
 
 /**

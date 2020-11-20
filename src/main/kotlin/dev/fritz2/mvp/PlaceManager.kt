@@ -1,6 +1,7 @@
 package dev.fritz2.mvp
 
 import dev.fritz2.dom.Tag
+import dev.fritz2.dom.WithDomNode
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.html.render
 import dev.fritz2.dom.mountDomNodeList
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.w3c.dom.Element
 
-/** A place request models consists of a token and an optional map of parameters. */
+/** A place request consists of a token and an optional map of parameters. */
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 
 internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
@@ -42,29 +43,61 @@ internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<Pla
 }
 
 /**
- * Manages the transition between places using a [Router] typed to [PlaceRequest].
+ * Specifies the tag to use for the presenter's views.
+ *
+ * @receiver The [tag][WithDomNode] which is managed by the [PlaceManager].
+ */
+public fun <E : Element> WithDomNode<E>.managedBy(placeManager: PlaceManager) {
+    placeManager.manage(this.domNode)
+}
+
+/**
+ * Specifies the element to use for the presenter's views.
+ *
+ * @receiver The [Element] which is managed by the [PlaceManager].
+ */
+public fun <E : Element> E.managedBy(placeManager: PlaceManager) {
+    placeManager.manage(this)
+}
+
+/**
+ * Manages the transition between places and bound presenters using a [Router] typed to [PlaceRequest].
  *
  * The place manager takes care of finding the right presenter for a place request and calling the presenter's
  * lifecycle methods.
  *
  * The place manager controls a specific element in the DOM tree. When switching from one presenter to another, the
  * element is cleared and filled with the elements of the new presenter's view.
+ *
+ * A typical setup might look like this:
+ * ```
+ * val placeManager = PlaceManager(PlaceRequest("apple"))
+ * render {
+ *     nav {
+ *         ul {
+ *             li { a { href("#apple") } }
+ *             li { a { href("#banana") } }
+ *             li { a { href("#pineapple") } }
+ *         }
+ *     }
+ *     main {
+ *         managedBy(placeManager)
+ *     }
+ * }
+ * ```
  */
 public class PlaceManager(
     private val default: PlaceRequest,
     private val notFound: RenderContext.(PlaceRequest) -> Unit = {
-        h1 {
-            +"404"
-        }
-        p {
-            +"${it.token} not found"
-        }
+        h1 { +"404" }
+        p { +"${it.token} not found" }
     }
 ) {
-    internal var error: Boolean = false
-    internal var currentPresenter: Presenter<*>? = null
+    private var error: Boolean = false
+    private var currentPresenter: Presenter<*>? = null
     private var currentPlaceRequest: PlaceRequest? = null
 
+    /** Provides access to the router. */
     public val router: Router<PlaceRequest> = Router(PlaceRequestRoute(default))
 
     /** The current presenter. */
