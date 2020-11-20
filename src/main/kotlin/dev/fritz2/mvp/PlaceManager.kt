@@ -11,7 +11,6 @@ import dev.fritz2.routing.encodeURIComponent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import org.w3c.dom.Element
 

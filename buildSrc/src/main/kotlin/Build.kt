@@ -13,12 +13,7 @@ object PluginVersions {
 
 object Versions {
     const val fritz2 = "0.8-SNAPSHOT"
-    const val elemento = "0.0.3"
     const val kotest = "4.3.0"
-}
-
-object Dependencies {
-    const val elemento = "dev.fritz2:elemento:${Versions.elemento}"
 }
 
 fun DependencyHandler.fritz2() {

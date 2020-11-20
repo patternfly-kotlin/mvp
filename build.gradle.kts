@@ -16,7 +16,6 @@ repositories {
 
 dependencies {
     fritz2()
-    implementation(Dependencies.elemento)
     kotest()
 }
 
