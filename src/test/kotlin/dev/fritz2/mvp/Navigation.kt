@@ -14,7 +14,6 @@ class NavigationTests {
     @Test
     fun click() = runTest {
         initPresenter()
-        initDocument()
         val placeManager = initPlaceManager()
 
         render {
@@ -39,13 +38,13 @@ class NavigationTests {
                 }
             }
         }.mount(navigationId)
+        delay(wait)
 
         val appleLink = document.getElementById("apple") as HTMLButtonElement
         val bananaLink = document.getElementById("banana") as HTMLButtonElement
         val pineappleLink = document.getElementById("pineapple") as HTMLButtonElement
 
         // initial place
-        delay(wait)
         assertEquals("🍎", content())
 
         bananaLink.click()
@@ -64,7 +63,6 @@ class NavigationTests {
     @Test
     fun link() = runTest {
         initPresenter()
-        initDocument()
         initPlaceManager()
 
         render {

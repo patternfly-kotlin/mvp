@@ -1,24 +1,22 @@
 package dev.fritz2.mvp
 
+import dev.fritz2.binding.mountSingle
 import dev.fritz2.dom.Tag
 import dev.fritz2.dom.WithDomNode
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.html.render
-import dev.fritz2.dom.mountDomNodeList
 import dev.fritz2.routing.Route
 import dev.fritz2.routing.Router
 import dev.fritz2.routing.decodeURIComponent
 import dev.fritz2.routing.encodeURIComponent
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import dev.fritz2.routing.router
+import kotlinx.dom.clear
 import org.w3c.dom.Element
 
 /** A place request consists of a token and an optional map of parameters. */
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 
-internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
+public class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
 
     override fun unmarshal(hash: String): PlaceRequest {
         val token = hash.substringBefore(';')
@@ -47,16 +45,7 @@ internal class PlaceRequestRoute(override val default: PlaceRequest) : Route<Pla
  *
  * @receiver The [tag][WithDomNode] which is managed by the [PlaceManager].
  */
-public fun <E : Element> WithDomNode<E>.managedBy(placeManager: PlaceManager) {
-    placeManager.manage(this.domNode)
-}
-
-/**
- * Specifies the element to use for the presenter's views.
- *
- * @receiver The [Element] which is managed by the [PlaceManager].
- */
-public fun <E : Element> E.managedBy(placeManager: PlaceManager) {
+public fun <E : Element> Tag<E>.managedBy(placeManager: PlaceManager) {
     placeManager.manage(this)
 }
 
@@ -66,83 +55,61 @@ public fun <E : Element> E.managedBy(placeManager: PlaceManager) {
  * The place manager takes care of finding the right presenter for a place request and calling the presenter's
  * lifecycle methods.
  *
- * The place manager controls a specific element in the DOM tree. When switching from one presenter to another, the
+ * The place manager controls a specific element in the DOM tree. When switching from one presenter to another, this
  * element is cleared and filled with the elements of the new presenter's view.
  *
- * A typical setup might look like this:
- * ```
- * val placeManager = PlaceManager(PlaceRequest("apple"))
- * render {
- *     nav {
- *         ul {
- *             li { a { href("#apple") } }
- *             li { a { href("#banana") } }
- *             li { a { href("#pineapple") } }
- *         }
- *     }
- *     main {
- *         managedBy(placeManager)
- *     }
- * }
- * ```
+ * A typical setup might look like this
+ *
+ * @sample PlaceManagerSamples.typicalSetup
  */
 public class PlaceManager(
-    private val default: PlaceRequest,
+    private val defaultPlaceRequest: PlaceRequest,
     private val notFound: RenderContext.(PlaceRequest) -> Unit = {
         h1 { +"404" }
         p { +"${it.token} not found" }
     }
 ) {
+
     private var error: Boolean = false
     private var currentPresenter: Presenter<*>? = null
     private var currentPlaceRequest: PlaceRequest? = null
 
     /** Provides access to the router. */
-    public val router: Router<PlaceRequest> = Router(PlaceRequestRoute(default))
+    public val router: Router<PlaceRequest> = router(PlaceRequestRoute(defaultPlaceRequest))
 
     /** The current presenter. */
     public val presenter: Presenter<*>?
         get() = currentPresenter
 
-    /** The current place request. */
-    public val placeRequest: PlaceRequest?
-        get() = currentPlaceRequest
+    /** The current place request. Same as [Router.current] */
+    public val placeRequest: PlaceRequest
+        get() = currentPlaceRequest ?: defaultPlaceRequest
 
-    /** Specify the tag to use for the presenter's views. */
-    public fun <E : Element> manage(tag: Tag<E>) {
-        manage(tag.domNode)
-    }
+    internal fun <E : Element> manage(tag: Tag<E>) {
+        mountSingle(tag.job, router.data) { placeRequest, _ ->
+            error = false
+            tag.domNode.clear()
 
-    /** Specify the element to use for the presenter's views. */
-    @OptIn(ExperimentalCoroutinesApi::class)
-    public fun <E : Element> manage(element: E?) {
-        if (element != null) {
-            mountDomNodeList(Job(), element, router.map { place ->
-                error = false
-                val nonEmptyPlace = if (place.token.isEmpty()) default else place
-                val presenter = Presenter.lookup<Presenter<View>>(nonEmptyPlace.token)
-                if (presenter != null) {
-                    if (presenter !== currentPresenter) {
-                        currentPresenter?.hide()
-                    }
-                    currentPresenter = presenter
-                    currentPlaceRequest = nonEmptyPlace
-                    presenter.prepareFromRequest(place)
-                    render {
-                        presenter.view.content(this)
-                    }
-                } else {
-                    error = true
-                    console.error("No presenter found for $nonEmptyPlace!")
-                    render {
-                        notFound(nonEmptyPlace)
-                    }
+            val nonEmptyPlace = if (placeRequest.token.isEmpty()) defaultPlaceRequest else placeRequest
+            val presenter = Presenter.lookup<Presenter<View>>(nonEmptyPlace.token)
+            if (presenter != null) {
+                if (presenter !== currentPresenter) {
+                    currentPresenter?.hide()
                 }
-            }.onEach {
-                if (!error) {
-                    currentPresenter?.show()
+                currentPresenter = presenter
+                currentPlaceRequest = nonEmptyPlace
+                presenter.prepareFromRequest(placeRequest)
+                render {
+                    presenter.view.content.invoke(tag)
+                    presenter.show()
                 }
-            })
+            } else {
+                error = true
+                console.error("No presenter found for $nonEmptyPlace!")
+                render {
+                    notFound.invoke(tag, nonEmptyPlace)
+                }
+            }
         }
     }
 }

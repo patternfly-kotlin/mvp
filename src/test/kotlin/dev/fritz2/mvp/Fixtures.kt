@@ -1,10 +1,14 @@
 package dev.fritz2.mvp
 
+import dev.fritz2.dom.appendToBody
+import dev.fritz2.dom.html.render
+import dev.fritz2.dom.html.renderElement
 import dev.fritz2.mvp.PresenterState.BIND
 import dev.fritz2.mvp.PresenterState.HIDE
 import dev.fritz2.mvp.PresenterState.PREPARE_FROM_REQUEST
 import dev.fritz2.mvp.PresenterState.SHOW
 import kotlinx.browser.document
+import kotlinx.browser.window
 
 // ------------------------------------------------------ constants
 
@@ -14,19 +18,6 @@ const val contentId = "content"
 const val wait = 200L
 
 // ------------------------------------------------------ html
-
-fun initDocument() {
-    document.clear()
-    //language=html
-    document.write(
-        """
-            <body>
-                <nav id="$navigationId"></nav>
-                <main id="$mainId"></main>
-            </body>
-        """.trimIndent()
-    )
-}
 
 fun content(): String? = document.getElementById(contentId)?.textContent
 
@@ -44,7 +35,17 @@ fun initPlaceManager(): PlaceManager {
     val placeManager = PlaceManager(PlaceRequest("apple")) {
         p(id = contentId) { +"💣" }
     }
-    placeManager.manage(document.getElementById(mainId))
+
+    document.clear()
+    appendToBody(renderElement {
+        nav(id = navigationId) {}
+    })
+    appendToBody(renderElement {
+        main(id = mainId) {
+            managedBy(placeManager)
+        }
+    })
+
     return placeManager
 }
 

@@ -9,23 +9,11 @@ import dev.fritz2.dom.html.RenderContext
  *
  * Presenters are singletons which are created lazily and which are then reused. They're bound to a specific string
  * token (aka place). They need to be registered using a token, and a function to create the presenter.
- * Use the presenter's companion object to register presenters:
- *
- * ```
- * class ApplePresenter : Presenter<AppleView> {
- *     override val view = AppleView()
- * }
- *
- * class AppleView : View {
- *     override val content: ViewContent = {
- *         p(id = contentId) { +"🍎" }
- *     }
- * }
- *
- * Presenter.register("apple", ::ApplePresenter)
- * ```
+ * Use the presenter's companion object to register presenters.
  *
  * @param V the type of the presenter's view
+ *
+ * @sample PresenterSamples.presenterView
  */
 public interface Presenter<out V : View> {
     public val view: V
@@ -102,23 +90,13 @@ public interface Presenter<out V : View> {
 /**
  * Views can implement this interface if they need a reference to their [Presenter].
  *
- * ```
- * class ApplePresenter : Presenter<AppleView> {
- *     override val view = AppleView(this)
- * }
- *
- * class AppleView(override val presenter: ApplePresenter) : View, WithPresenter<ApplePresenter> {
- *     override val content: ViewContent = {
- *         p(id = contentId) { +"🍎" }
- *     }
- * }
- * ```
+ * @sample WithPresenterSamples.WithPresenterSample
  */
 public interface WithPresenter<P : Presenter<View>> {
     public val presenter: P
 }
 
-/** Alias for the lambda which creates the view content. */
+/** Alias for the function which renders the view's content. */
 public typealias ViewContent = RenderContext.() -> Unit
 
 /**

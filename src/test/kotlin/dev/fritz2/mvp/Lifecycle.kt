@@ -17,7 +17,6 @@ class LifecycleTests {
     @Test
     fun lifecycle() = runTest {
         initPresenter()
-        initDocument()
         val placeManager = initPlaceManager()
 
         render {
@@ -47,6 +46,7 @@ class LifecycleTests {
                 }
             }
         }.mount(navigationId)
+        delay(wait)
 
         val appleLink = document.getElementById("apple") as HTMLButtonElement
         val galaLink = document.getElementById("gala") as HTMLButtonElement
@@ -57,7 +57,6 @@ class LifecycleTests {
         val bananaState = mutableListOf<PresenterState>()
 
         // initial place
-        delay(wait)
         assertState(applePresenter, appleState, BIND, PREPARE_FROM_REQUEST, SHOW)
 
         // same presenter, but different place request

@@ -13,7 +13,6 @@ class NotFoundTests {
     @Test
     fun notfound() = runTest {
         initPresenter()
-        initDocument()
         val placeManager = initPlaceManager()
 
         render {
@@ -32,12 +31,12 @@ class NotFoundTests {
                 }
             }
         }.mount(navigationId)
+        delay(wait)
 
         val undefinedLink = document.getElementById("404") as HTMLButtonElement
         val appleLink = document.getElementById("apple") as HTMLButtonElement
 
         // initial place
-        delay(wait)
         assertEquals("🍎", content())
 
         undefinedLink.click()
