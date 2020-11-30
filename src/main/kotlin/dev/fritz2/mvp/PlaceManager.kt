@@ -10,6 +10,7 @@ import dev.fritz2.routing.Router
 import dev.fritz2.routing.decodeURIComponent
 import dev.fritz2.routing.encodeURIComponent
 import dev.fritz2.routing.router
+import kotlinx.coroutines.flow.Flow
 import kotlinx.dom.clear
 import org.w3c.dom.Element
 
@@ -76,6 +77,12 @@ public class PlaceManager(
 
     /** Provides access to the router. */
     public val router: Router<PlaceRequest> = router(PlaceRequestRoute(defaultPlaceRequest))
+
+    /**
+     * Flow of [PlaceRequest]s.
+     */
+    public val placeRequests: Flow<PlaceRequest>
+        get() = router.data
 
     /** The current presenter. */
     public val presenter: Presenter<*>?
