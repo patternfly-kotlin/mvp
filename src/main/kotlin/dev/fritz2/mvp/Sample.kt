@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 package dev.fritz2.mvp
 
 import dev.fritz2.dom.html.RenderContext
@@ -18,6 +20,21 @@ internal interface PlaceManagerSamples {
             main {
                 managedBy(placeManager)
             }
+        }
+    }
+}
+
+internal interface PlaceRequestSamples {
+
+    fun placeRequests() {
+        val home = placeRequest("home")
+
+        val users = placeRequest("users", "page" to "2")
+
+        val params = mapOf<String, String>() // other params
+        val johnDoe = placeRequest("user") {
+            put("id", "john-doe")
+            putAll(params)
         }
     }
 }

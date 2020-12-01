@@ -14,7 +14,38 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.dom.clear
 import org.w3c.dom.Element
 
-/** A place request consists of a token and an optional map of parameters. */
+/**
+ * Helper function to build [PlaceRequest]s.
+ */
+public fun placeRequest(token: String): PlaceRequest =
+    PlaceRequest(token)
+
+/**
+ * Helper function to build [PlaceRequest]s.
+ */
+public fun placeRequest(token: String, params: Pair<String, String>): PlaceRequest =
+    PlaceRequest(token, mapOf(params))
+
+/**
+ * Helper function to build [PlaceRequest]s.
+ */
+public fun placeRequest(token: String, vararg params: Pair<String, String>): PlaceRequest =
+    PlaceRequest(token, mapOf(*params))
+
+/**
+ * Helper function to build [PlaceRequest]s.
+ */
+@OptIn(ExperimentalStdlibApi::class)
+public fun placeRequest(token: String, params: MutableMap<String, String>.() -> Unit = {}): PlaceRequest =
+    PlaceRequest(token, buildMap(params))
+
+/**
+ * A place request consists of a token and an optional map of parameters.
+ *
+ * You can use one of the builder functions to create place requests.
+ *
+ * @sample PlaceRequestSamples.placeRequests
+ */
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 
 public class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
@@ -93,7 +124,7 @@ public class PlaceManager(
         get() = currentPlaceRequest ?: defaultPlaceRequest
 
     internal fun <E : Element> manage(tag: Tag<E>) {
-        mountSingle(tag.job, router.data) { placeRequest, _ ->
+        mountSingle(tag.job, placeRequests) { placeRequest, _ ->
             error = false
             tag.domNode.clear()
 
