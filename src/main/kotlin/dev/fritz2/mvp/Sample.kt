@@ -2,7 +2,6 @@
 
 package dev.fritz2.mvp
 
-import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.html.render
 
 internal interface PlaceManagerSamples {
