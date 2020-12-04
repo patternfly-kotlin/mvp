@@ -3,7 +3,7 @@ import org.gradle.api.publish.maven.MavenPom
 
 object Constants {
     const val group = "dev.fritz2"
-    const val version = "0.0.4"
+    const val version = "0.0.5"
 }
 
 object PluginVersions {
@@ -12,7 +12,7 @@ object PluginVersions {
 }
 
 object Versions {
-    const val fritz2 = "0.8-SNAPSHOT"
+    const val fritz2 = "0.9-SNAPSHOT"
     const val kotest = "4.3.0"
 }
 
