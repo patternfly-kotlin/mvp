@@ -48,8 +48,22 @@ public fun placeRequest(token: String, params: MutableMap<String, String>.() -> 
  */
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 
+/**
+ * [Route] typed to [PlaceRequest]. Contains the functions to [marshal] and [unmarshal] the [PlaceRequest]s.
+ *
+ * [PlaceRequest]s are marshaled to strings using the following format:
+ *
+ * ```
+ * token[;key=value]
+ * ```
+ *
+ * @sample PlaceRequestSamples.marshal
+ */
 public class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
 
+    /**
+     * Unmarshals a string into a [PlaceRequest].
+     */
     override fun unmarshal(hash: String): PlaceRequest {
         val token = hash.substringBefore(';')
         val params = hash.substringAfter(';', "")
@@ -62,6 +76,9 @@ public class PlaceRequestRoute(override val default: PlaceRequest) : Route<Place
         return PlaceRequest(token, params)
     }
 
+    /**
+     * Marshals a [PlaceRequest] into a string.
+     */
     override fun marshal(route: PlaceRequest): String = buildString {
         append(route.token)
         if (route.params.isNotEmpty()) {
@@ -82,7 +99,7 @@ public fun <E : Element> Tag<E>.managedBy(placeManager: PlaceManager) {
 }
 
 /**
- * Manages the transition between places and bound presenters using a [Router] typed to [PlaceRequest].
+ * Manages the transition between places and presenters using a [Router] typed to [PlaceRequest].
  *
  * The place manager takes care of finding the right presenter for a place request and calling the presenter's
  * lifecycle methods.
@@ -90,7 +107,8 @@ public fun <E : Element> Tag<E>.managedBy(placeManager: PlaceManager) {
  * The place manager controls a specific element in the DOM tree. When switching from one presenter to another, this
  * element is cleared and filled with the elements of the new presenter's view.
  *
- * A typical setup might look like this
+ * @param defaultPlaceRequest the default / initial place request
+ * @param notFound a function to show content for places which are not bound to a presenter
  *
  * @sample PlaceManagerSamples.typicalSetup
  */

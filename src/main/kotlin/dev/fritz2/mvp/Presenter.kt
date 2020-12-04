@@ -18,20 +18,20 @@ import dev.fritz2.dom.html.RenderContext
 public interface Presenter<out V : View> {
     public val view: V
 
-    /** Called once, after the presenter has been created. Override this method to implement one-time setup code. */
+    /** Called *once*, after the presenter has been created. Override this method to implement one-time setup code. */
     public fun bind() {}
 
     /**
-     * Called each time before the presenter is shown (before [show] is called).
+     * Called *each time* before the presenter is shown (before [show] is called).
      *
-     * Override this method if you want to use data from [PlaceRequest].
+     * Override this method if you want to use parameters from [PlaceRequest].
      */
     public fun prepareFromRequest(place: PlaceRequest) {}
 
-    /** Called each time after the view has been attached to the DOM (after [prepareFromRequest]). */
+    /** Called *each time* after the view has been attached to the DOM (after [prepareFromRequest]). */
     public fun show() {}
 
-    /** Called each time before the view is removed from the DOM. */
+    /** Called *each time* before the view is removed from the DOM. */
     public fun hide() {}
 
     /** Registry for all presenters. Use this object to register and find presenters. */
@@ -105,6 +105,6 @@ public typealias ViewContent = RenderContext.() -> Unit
  */
 public interface View {
 
-    /** A function defining the visual representation of the view. */
+    /** The function defining the visual representation of this view. */
     public val content: ViewContent
 }

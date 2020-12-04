@@ -30,8 +30,20 @@ internal interface PlaceRequestSamples {
 
         val users = placeRequest("users", "page" to "2")
 
-        val params = mapOf<String, String>() // other params
-        val johnDoe = placeRequest("user") {
+        val params = mapOf("foo" to "bar", "bd" to "29")
+        val johnDoe = placeRequest("settings") {
+            put("id", "0815")
+            putAll(params)
+        }
+    }
+
+    fun marshal() {
+        placeRequest("home") // "home"
+        placeRequest("users", "page" to "2") // "users;page=2"
+
+        // settings;id=john-doe;foo=bar;bd=29
+        val params = mapOf("foo" to "bar", "bd" to "29")
+        val johnDoe = placeRequest("settings") {
             put("id", "john-doe")
             putAll(params)
         }
@@ -50,12 +62,14 @@ internal interface PresenterSamples {
         class ApplePresenter : Presenter<AppleView> {
             override val view = AppleView()
         }
+
+        Presenter.register("apple", ::ApplePresenter)
     }
 }
 
 internal interface WithPresenterSamples {
 
-    // object used just for documentation purposes
+    // object used for documentation purposes only
     object WithPresenterSample {
 
         class AppleView(override val presenter: ApplePresenter) :
