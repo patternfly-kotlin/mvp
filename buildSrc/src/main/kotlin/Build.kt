@@ -3,7 +3,7 @@ import org.gradle.api.publish.maven.MavenPom
 
 object Constants {
     const val group = "dev.fritz2"
-    const val version = "0.0.5"
+    const val version = "0.1.0"
 }
 
 object PluginVersions {
@@ -12,8 +12,8 @@ object PluginVersions {
 }
 
 object Versions {
-    const val fritz2 = "0.9-SNAPSHOT"
-    const val kotest = "4.3.0"
+    const val fritz2 = "0.8"
+    const val kotest = "4.3.1"
 }
 
 fun DependencyHandler.fritz2() {
