@@ -13,7 +13,7 @@ import dev.fritz2.dom.html.RenderContext
  *
  * @param V the type of the presenter's view
  *
- * @sample PresenterSamples.presenterView
+ * @sample dev.fritz2.sample.PresenterSample.presenterView
  */
 public interface Presenter<out V : View> {
     public val view: V
@@ -90,7 +90,7 @@ public interface Presenter<out V : View> {
 /**
  * Views can implement this interface if they need a reference to their [Presenter].
  *
- * @sample WithPresenterSamples.WithPresenterSample
+ * @sample dev.fritz2.sample.WithPresenterSample.WithPresenterSample
  */
 public interface WithPresenter<P : Presenter<View>> {
     public val presenter: P

@@ -13,11 +13,11 @@ of data classes which you create or fetch in the presenter.
 
 ### View
 
-The view is a simple interface with just a single property you need to implement.
+The view is a simple interface with just a single property you need to implement (`ViewContent` is just a type alias for `RenderContext.() -> Unit`).
 
 ```kotlin
 interface View {
-    val elements: List<Tag<HTMLElement>>
+    val content: ViewContent
 }
 ``` 
 
@@ -48,14 +48,13 @@ Presenters are singletons which are created lazily and which are then reused. Th
 
 ```kotlin
 class AppleView : View {
-    override val elements = listOf(
-        render {
-            p { +"🍎" }
-        })
+    override val content: ViewContent = {
+        p { +"🍎" }
+    }
 }
 
 class ApplePresenter : Presenter<AppleView> {
-   override val view = AppleView()
+    override val view = AppleView()
 }
 
 Presenter.register("apple", ::ApplePresenter)
@@ -90,22 +89,24 @@ A place request is a simple data class with a token and an optional map of param
 data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 ```
 
-Place requests are (un)marshalled to URL fragments:
+Place requests can be created using helper functions and are (un)marshalled to URL fragments:
 
 ```kotlin
-PlaceRequest("apple") // --> #apple
-PlaceRequest("apple", mapOf("type" to "red-delicious")) // --> #apple;type=red-delicious
-PlaceRequest("apple", mapOf("type" to "granny-smith", "size" to "xxl")) // --> #apple;type=granny-smith;size=xxl 
+placeRequest("apple") // --> #apple
+placeRequest("apple", "type" to "red-delicious") // --> #apple;type=red-delicious
+placeRequest("apple") {
+    put("type", "granny-smith")
+    put("size", "xxl")
+} // --> #apple;type=granny-smith;size=xxl
 ``` 
 
 Place requests are handled by a place manager. A place manager is created by specifying a default place, and 
-a function to create an element which is used in case no presenter could be found for the requested place:
+a function which is used if no presenter could be found for the requested place:
 
 ```kotlin
-val placeManager = PlaceManager(PlaceRequest("apple")) {
-    render {
-        p { +"💣" }
-    }
+val placeManager = PlaceManager(placeRequest("apple")) {
+    h1 { +"No fruits here" }
+    p { +"I don't know ${it.token}!" }
 }
 ```
 
@@ -117,21 +118,26 @@ val placeManager = ...
 render {
     button {
         +"apple"
-        clicks.map { PlaceRequest("apple") } handledBy placeManager.router.navTo
+        clicks.map { placeRequest("apple") } handledBy placeManager.router.navTo
     }
 }
 ```
 
-Finally, you have to specify a tag, or an element which is used by the place manager to show the elements of the views:
+Finally, you have to specify a tag which is used by the place manager to show the elements of the views:
 
 ```kotlin
 val placeManager = ...
 
 render {
-    main {
-        section {
-            placeManager.manage(this)
+    nav {
+        ul {
+            li { a { href("#apple") } }
+            li { a { href("#banana") } }
+            li { a { href("#pineapple") } }
         }
+    }
+    main {
+        managedBy(placeManager)
     }
 }
 ```  
@@ -152,10 +158,9 @@ The following code snippet contains a small example with three presenter / view 
 
 ```kotlin
 class AppleView : View {
-    override val elements = listOf(
-        render {
-            p { +"🍎" }
-        })
+    override val content: ViewContent = {
+        p { +"🍎" }
+    }
 }
 
 class ApplePresenter : Presenter<AppleView> {
@@ -163,10 +168,9 @@ class ApplePresenter : Presenter<AppleView> {
 }
 
 class BananaView : View {
-    override val elements = listOf(
-        render {
-            p { +"🍌" }
-        })
+    override val content: ViewContent = {
+        p { +"🍌" }
+    }
 }
 
 class BananaPresenter : Presenter<BananaView> {
@@ -174,10 +178,9 @@ class BananaPresenter : Presenter<BananaView> {
 }
 
 class PineappleView : View {
-    override val elements = listOf(
-        render {
-            p { +"🍍" }
-        })
+    override val content: ViewContent = {
+        p { +"🍍" }
+    }
 }
 
 class PineapplePresenter : Presenter<PineappleView> {
@@ -190,9 +193,7 @@ fun main() {
     Presenter.register("pineapple", ::PineapplePresenter)
 
     val placeManager = PlaceManager(PlaceRequest("apple")) {
-        render {
-            p { +"💣" }
-        }
+        p { +"💣" }
     }
 
     // let index.html be '<body id="target"></body>'
@@ -201,19 +202,19 @@ fun main() {
             nav {
                 button {
                     +"apple"
-                    clicks.map { PlaceRequest("apple") } handledBy placeManager.router.navTo
+                    clicks.map { placeRequest("apple") } handledBy placeManager.router.navTo
                 }
                 button {
                     +"banana"
-                    clicks.map { PlaceRequest("banana") } handledBy placeManager.router.navTo
+                    clicks.map { placeRequest("banana") } handledBy placeManager.router.navTo
                 }
                 button {
                     +"pineapple"
-                    clicks.map { PlaceRequest("pineapple") } handledBy placeManager.router.navTo
+                    clicks.map { placeRequest("pineapple") } handledBy placeManager.router.navTo
                 }
             }
             section {
-                placeManager.manage(this)
+                managedBy(placeManager)
             }
         }
     }.mount("target")

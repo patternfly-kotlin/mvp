@@ -1,3 +1,5 @@
+import java.net.URL
+
 plugins {
     kotlin("js") version PluginVersions.js
     id("org.jetbrains.dokka") version PluginVersions.dokka
@@ -22,9 +24,11 @@ dependencies {
 kotlin {
     js {
         explicitApi()
-        compilations.named("main") {
-            kotlinOptions {
-                freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
+        sourceSets {
+            named("main") {
+                languageSettings.apply {
+                    useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+                }
             }
         }
         browser {
@@ -41,6 +45,31 @@ val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
     from(kotlin.sourceSets.main.get().kotlin)
 }
+
+tasks.dokkaHtml.configure {
+    dokkaSourceSets {
+        named("main") {
+            includeNonPublic.set(false)
+            skipEmptyPackages.set(true)
+            platform.set(org.jetbrains.dokka.Platform.js)
+            samples.from("src/main/resources/")
+            sourceLink {
+                localDirectory.set(file("src/main/kotlin"))
+                remoteUrl.set(
+                    URL(
+                        "https://github.com/hpehl/fritz2-mvp/blob/master" +
+                                "src/main/kotlin/"
+                    )
+                )
+                remoteLineSuffix.set("#L")
+            }
+            externalDocumentationLink {
+                this.url.set(URL("https://api.fritz2.dev/core/core/"))
+            }
+        }
+    }
+}
+
 
 publishing {
     publications {
