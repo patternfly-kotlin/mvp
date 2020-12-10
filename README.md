@@ -114,13 +114,13 @@ data class PlaceRequest(val token: String, val params: Map<String, String> = map
 Place requests can be created using factory functions and are (un)marshalled to URL fragments:
 
 ```kotlin
-// --> #apple
+// #apple
 placeRequest("apple")
 
-// --> #apple;type=red-delicious
+// #apple;type=red-delicious
 placeRequest("apple", "type" to "red-delicious")
 
-// --> #apple;type=granny-smith;size=xxl
+// #apple;type=granny-smith;size=xxl
 placeRequest("apple") {
     put("type", "granny-smith")
     put("size", "xxl")
