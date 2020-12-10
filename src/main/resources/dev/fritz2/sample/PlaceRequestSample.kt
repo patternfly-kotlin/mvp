@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 package dev.fritz2.sample
 
 import dev.fritz2.mvp.placeRequest

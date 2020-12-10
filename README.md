@@ -9,7 +9,7 @@ fritz2-mvp comes with just a few classes and provides a very lightweight and str
 ### Model
 
 You are free to use any kind of model you want to. There are no restrictions in the API. Usually you'd use some kind 
-of data classes which you create or fetch in the presenter. 
+of store or data classes which you create or fetch in the presenter. 
 
 ### View
 
@@ -21,7 +21,29 @@ interface View {
 }
 ``` 
 
-A view should just define the visual representation and should not contain business logic. A view is always bound to a specific presenter.
+A view should just define the visual representation and should not contain business logic. A view is always bound to a specific presenter. If you need a reference to the presenter in the view, you can implement an additional interface:
+
+```kotlin
+public interface WithPresenter<P : Presenter<View>> {
+    public val presenter: P
+}
+```
+
+Here's an example how to use it:
+
+```kotlin
+class AppleView(override val presenter: ApplePresenter) :
+    View, WithPresenter<ApplePresenter> {
+
+    override val content: ViewContent = {
+        p { +"🍎" }
+    }
+}
+
+class ApplePresenter : Presenter<AppleView> {
+    override val view = AppleView(this)
+}
+```
 
 ### Presenter
 
@@ -44,7 +66,7 @@ like (web) components or DOM elements. Instead, it should focus on the actual us
 events and update its view.
 
 Presenters are singletons which are created lazily and which are then reused. They're bound to a specific token 
-(aka place). They need to be registered using the token, and a function to create the presenter.
+(aka place). They need to be registered using that token, and a function to create the presenter.
 
 ```kotlin
 class AppleView : View {
@@ -62,7 +84,7 @@ Presenter.register("apple", ::ApplePresenter)
 
 #### Lifecycle
 
-The place manager (see below) manages the lifecycle of presenters. Override one of the following methods to take part 
+Presenters are managed by a place manager (see below). Override one of the presenter methods to take part 
 in the lifecycle of a presenter: 
 
 1. `bind()`  
@@ -89,19 +111,23 @@ A place request is a simple data class with a token and an optional map of param
 data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 ```
 
-Place requests can be created using helper functions and are (un)marshalled to URL fragments:
+Place requests can be created using factory functions and are (un)marshalled to URL fragments:
 
 ```kotlin
-placeRequest("apple") // --> #apple
-placeRequest("apple", "type" to "red-delicious") // --> #apple;type=red-delicious
+// --> #apple
+placeRequest("apple")
+
+// --> #apple;type=red-delicious
+placeRequest("apple", "type" to "red-delicious")
+
+// --> #apple;type=granny-smith;size=xxl
 placeRequest("apple") {
     put("type", "granny-smith")
     put("size", "xxl")
-} // --> #apple;type=granny-smith;size=xxl
+} 
 ``` 
 
-Place requests are handled by a place manager. A place manager is created by specifying a default place, and 
-a function which is used if no presenter could be found for the requested place:
+Place requests are handled by a place manager. There should be only one place manager per application. It is created by specifying a default place, and a function which is used if no presenter could be found for the requested place:
 
 ```kotlin
 val placeManager = PlaceManager(placeRequest("apple")) {
