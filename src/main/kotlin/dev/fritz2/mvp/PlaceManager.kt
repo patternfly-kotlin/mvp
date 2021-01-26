@@ -45,7 +45,11 @@ public fun placeRequest(token: String, params: MutableMap<String, String>.() -> 
  *
  * @sample dev.fritz2.sample.PlaceRequestSample.placeRequests
  */
-public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
+public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf()) {
+
+    public val hash: String
+        get() = "#" + PlaceRequestRoute(this).marshal(this)
+}
 
 /**
  * [Route] typed to [PlaceRequest]. Contains the functions to [marshal] and [unmarshal] the [PlaceRequest]s.
