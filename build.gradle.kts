@@ -15,7 +15,6 @@ val license = "Apache-2.0"
 val githubRepo = "hpehl/fritz2-mvp"
 
 val fritz2 = "0.9-SNAPSHOT"
-val kotest = "4.4.1"
 
 repositories {
     mavenLocal()
@@ -27,14 +26,11 @@ repositories {
 
 dependencies {
     implementation("dev.fritz2:core:$fritz2")
-    testImplementation("io.kotest:kotest-framework-api:$kotest")
-    testImplementation("io.kotest:kotest-assertions-core:$kotest")
-    testImplementation("io.kotest:kotest-property:$kotest")
-    testImplementation("io.kotest:kotest-framework-engine:$kotest")
+    testImplementation(kotlin("test-js"))
 }
 
 kotlin {
-    js {
+    js(BOTH) {
         explicitApi()
         browser {
             testTask {
@@ -58,7 +54,6 @@ val sourcesJar by tasks.registering(Jar::class) {
     from(kotlin.sourceSets.main.get().kotlin)
 }
 
-/*
 tasks {
     dokkaHtml.configure {
         dokkaSourceSets {
@@ -87,7 +82,6 @@ tasks {
         }
     }
 }
-*/
 
 publishing {
     publications {
