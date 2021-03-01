@@ -12,7 +12,7 @@ import dev.fritz2.routing.encodeURIComponent
 import dev.fritz2.routing.router
 import kotlinx.coroutines.flow.Flow
 import kotlinx.dom.clear
-import org.w3c.dom.Element
+import org.w3c.dom.HTMLElement
 
 /**
  * Helper function to build [PlaceRequest]s.
@@ -47,8 +47,11 @@ public fun placeRequest(token: String, params: MutableMap<String, String>.() -> 
  */
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf()) {
 
+    /**
+     * returns the [location hash](https://developer.mozilla.org/en-US/docs/Web/API/Location/hash) of this place request.
+     */
     public val hash: String
-        get() = "#" + PlaceRequestRoute(this).marshal(this)
+        get() = "#" + PlaceRequestRoute(this).serialize(this)
 }
 
 /**
@@ -67,7 +70,7 @@ public class PlaceRequestRoute(override val default: PlaceRequest) : Route<Place
     /**
      * Unmarshals a string into a [PlaceRequest].
      */
-    override fun unmarshal(hash: String): PlaceRequest {
+    override fun deserialize(hash: String): PlaceRequest {
         val token = hash.substringBefore(';')
         val params = hash.substringAfter(';', "")
             .split(";")
@@ -82,7 +85,7 @@ public class PlaceRequestRoute(override val default: PlaceRequest) : Route<Place
     /**
      * Marshals a [PlaceRequest] into a string.
      */
-    override fun marshal(route: PlaceRequest): String = buildString {
+    override fun serialize(route: PlaceRequest): String = buildString {
         append(route.token)
         if (route.params.isNotEmpty()) {
             route.params
@@ -97,7 +100,7 @@ public class PlaceRequestRoute(override val default: PlaceRequest) : Route<Place
  *
  * @receiver The [tag][WithDomNode] which is managed by the [PlaceManager].
  */
-public fun <E : Element> Tag<E>.managedBy(placeManager: PlaceManager) {
+public fun <E : HTMLElement> Tag<E>.managedBy(placeManager: PlaceManager) {
     placeManager.manage(this)
 }
 
@@ -144,7 +147,7 @@ public class PlaceManager(
     public val placeRequest: PlaceRequest
         get() = currentPlaceRequest ?: defaultPlaceRequest
 
-    internal fun <E : Element> manage(tag: Tag<E>) {
+    internal fun <E : HTMLElement> manage(tag: Tag<E>) {
         mountSingle(tag.job, placeRequests) { placeRequest, _ ->
             error = false
             tag.domNode.clear()
@@ -158,15 +161,15 @@ public class PlaceManager(
                 currentPresenter = presenter
                 currentPlaceRequest = nonEmptyPlace
                 presenter.prepareFromRequest(placeRequest)
-                render {
-                    presenter.view.content.invoke(tag)
+                render(tag.domNode) {
+                    presenter.view.content(this)
                     presenter.show()
                 }
             } else {
                 error = true
                 console.error("No presenter found for $nonEmptyPlace!")
-                render {
-                    notFound.invoke(tag, nonEmptyPlace)
+                render(tag.domNode) {
+                    notFound.invoke(this, nonEmptyPlace)
                 }
             }
         }

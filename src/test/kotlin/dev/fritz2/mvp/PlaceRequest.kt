@@ -22,7 +22,7 @@ class PlaceRequestTests {
 
     private fun assertPlaceRequest(hash: String, placeRequest: PlaceRequest) {
         val prr = PlaceRequestRoute(placeRequest)
-        assertEquals(hash, prr.marshal(placeRequest))
-        assertEquals(placeRequest, prr.unmarshal(hash))
+        assertEquals(hash, prr.serialize(placeRequest))
+        assertEquals(placeRequest, prr.deserialize(hash))
     }
 }

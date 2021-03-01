@@ -1,19 +1,16 @@
 package dev.fritz2.mvp
 
-import dev.fritz2.dom.appendToBody
 import dev.fritz2.dom.html.render
-import dev.fritz2.dom.html.renderElement
 import dev.fritz2.mvp.PresenterState.BIND
 import dev.fritz2.mvp.PresenterState.HIDE
 import dev.fritz2.mvp.PresenterState.PREPARE_FROM_REQUEST
 import dev.fritz2.mvp.PresenterState.SHOW
 import kotlinx.browser.document
-import kotlinx.browser.window
 
 // ------------------------------------------------------ constants
 
 const val navigationId = "navigation"
-const val mainId = "main"
+const val navigationSelector = "#$navigationId"
 const val contentId = "content"
 const val wait = 200L
 
@@ -37,15 +34,12 @@ fun initPlaceManager(): PlaceManager {
     }
 
     document.clear()
-    appendToBody(renderElement {
+    render {
         nav(id = navigationId) {}
-    })
-    appendToBody(renderElement {
-        main(id = mainId) {
+        main {
             managedBy(placeManager)
         }
-    })
-
+    }
     return placeManager
 }
 

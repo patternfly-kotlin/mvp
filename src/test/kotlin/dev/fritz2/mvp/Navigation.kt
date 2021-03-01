@@ -1,7 +1,6 @@
 package dev.fritz2.mvp
 
 import dev.fritz2.dom.html.render
-import dev.fritz2.dom.mount
 import kotlinx.browser.document
 import kotlinx.coroutines.delay
 import org.w3c.dom.HTMLAnchorElement
@@ -16,7 +15,7 @@ class NavigationTests {
         initPresenter()
         val placeManager = initPlaceManager()
 
-        render {
+        render(navigationSelector) {
             ul {
                 li {
                     button(id = "apple") {
@@ -37,7 +36,7 @@ class NavigationTests {
                     }
                 }
             }
-        }.mount(navigationId)
+        }
         delay(wait)
 
         val appleLink = document.getElementById("apple") as HTMLButtonElement
@@ -65,7 +64,7 @@ class NavigationTests {
         initPresenter()
         initPlaceManager()
 
-        render {
+        render(navigationSelector) {
             ul {
                 li {
                     a(id = "apple") {
@@ -86,7 +85,7 @@ class NavigationTests {
                     }
                 }
             }
-        }.mount(navigationId)
+        }
 
         val appleLink = document.getElementById("apple") as HTMLAnchorElement
         val bananaLink = document.getElementById("banana") as HTMLAnchorElement

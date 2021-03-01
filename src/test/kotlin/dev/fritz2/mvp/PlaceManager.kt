@@ -1,7 +1,6 @@
 package dev.fritz2.mvp
 
 import dev.fritz2.dom.html.render
-import dev.fritz2.dom.mount
 import kotlinx.browser.document
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -23,7 +22,7 @@ class PlaceManagerTests {
         val galaPlaceRequest = PlaceRequest("apple", mapOf("type" to "gala"))
         val grannySmithPlaceRequest = PlaceRequest("apple", mapOf("type" to "granny-smith", "size" to "xxl"))
 
-        render {
+        render(navigationSelector) {
             ul {
                 li {
                     button(id = "red-delicious") {
@@ -44,7 +43,7 @@ class PlaceManagerTests {
                     }
                 }
             }
-        }.mount(navigationId)
+        }
         delay(wait)
 
         val redDeliciousLink = document.getElementById("red-delicious") as HTMLButtonElement

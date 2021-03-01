@@ -1,7 +1,6 @@
 package dev.fritz2.mvp
 
 import dev.fritz2.dom.html.render
-import dev.fritz2.dom.mount
 import dev.fritz2.mvp.PresenterState.BIND
 import dev.fritz2.mvp.PresenterState.HIDE
 import dev.fritz2.mvp.PresenterState.PREPARE_FROM_REQUEST
@@ -19,7 +18,7 @@ class LifecycleTests {
         initPresenter()
         val placeManager = initPlaceManager()
 
-        render {
+        render(navigationSelector) {
             ul {
                 li {
                     button(id = "apple") {
@@ -45,7 +44,7 @@ class LifecycleTests {
                     }
                 }
             }
-        }.mount(navigationId)
+        }
         delay(wait)
 
         val appleLink = document.getElementById("apple") as HTMLButtonElement

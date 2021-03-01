@@ -1,7 +1,6 @@
 package dev.fritz2.mvp
 
 import dev.fritz2.dom.html.render
-import dev.fritz2.dom.mount
 import kotlinx.browser.document
 import kotlinx.coroutines.delay
 import org.w3c.dom.HTMLButtonElement
@@ -15,7 +14,7 @@ class NotFoundTests {
         initPresenter()
         val placeManager = initPlaceManager()
 
-        render {
+        render(navigationSelector) {
             ul {
                 li {
                     button(id = "apple") {
@@ -30,7 +29,7 @@ class NotFoundTests {
                     }
                 }
             }
-        }.mount(navigationId)
+        }
         delay(wait)
 
         val undefinedLink = document.getElementById("404") as HTMLButtonElement
