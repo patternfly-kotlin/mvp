@@ -1,20 +1,20 @@
+import org.jetbrains.dokka.Platform
 import java.net.URL
 
 plugins {
-    kotlin("js") version "1.4.30"
+    kotlin("js") version "1.4.31"
     id("org.jetbrains.dokka") version "1.4.20"
     `maven-publish`
 }
 
 group = "dev.fritz2"
-version = "0.2.0"
+version = "0.3.0"
 
-val name = "mvp"
-val description = "MVP implementation based on fritz2"
+val desc = "MVP implementation based on fritz2"
 val license = "Apache-2.0"
 val githubRepo = "hpehl/fritz2-mvp"
 
-val fritz2 = "0.9-SNAPSHOT"
+val fritz2 = "0.9"
 
 repositories {
     mavenLocal()
@@ -62,14 +62,12 @@ tasks {
                 noStdlibLink.set(false)
                 includeNonPublic.set(false)
                 skipEmptyPackages.set(true)
-                platform.set(org.jetbrains.dokka.Platform.js)
+                platform.set(Platform.js)
                 includes.from("src/main/resources/module.md")
                 samples.from("src/main/resources/")
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(
-                        URL("https://github.com/$githubRepo/blob/master/src/main/kotlin/")
-                    )
+                    remoteUrl.set(URL("https://github.com/$githubRepo/blob/master/src/main/kotlin/"))
                     remoteLineSuffix.set("#L")
                 }
                 externalDocumentationLink {
@@ -86,14 +84,14 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = group.toString()
-            artifactId = name
-            version = version
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
             from(components["kotlin"])
             artifact(tasks["sourcesJar"])
             pom {
-                name.set(name)
-                description.set(description)
+                name.set(project.name)
+                description.set(desc)
                 url.set("https://github.com/$githubRepo")
                 licenses {
                     license {
