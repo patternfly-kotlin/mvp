@@ -10,11 +10,15 @@ plugins {
 group = "dev.fritz2"
 version = "0.3.0"
 
-val desc = "MVP implementation based on fritz2"
-val license = "Apache-2.0"
-val githubRepo = "hpehl/fritz2-mvp"
+object Meta {
+    const val desc = "MVP implementation based on fritz2"
+    const val license = "Apache-2.0"
+    const val githubRepo = "hpehl/fritz2-mvp"
+}
 
-val fritz2 = "0.9"
+object Versions {
+    const val fritz2 = "0.9"
+}
 
 repositories {
     mavenLocal()
@@ -25,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.fritz2:core:$fritz2")
+    implementation("dev.fritz2:core:${Versions.fritz2}")
     testImplementation(kotlin("test-js"))
 }
 
@@ -67,7 +71,7 @@ tasks {
                 samples.from("src/main/resources/")
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/$githubRepo/blob/master/src/main/kotlin/"))
+                    remoteUrl.set(URL("https://github.com/${Meta.githubRepo}/blob/master/src/main/kotlin/"))
                     remoteLineSuffix.set("#L")
                 }
                 externalDocumentationLink {
@@ -91,11 +95,11 @@ publishing {
             artifact(tasks["sourcesJar"])
             pom {
                 name.set(project.name)
-                description.set(desc)
-                url.set("https://github.com/$githubRepo")
+                description.set(Meta.desc)
+                url.set("https://github.com/${Meta.githubRepo}")
                 licenses {
                     license {
-                        name.set(license)
+                        name.set(Meta.license)
                         url.set("https://opensource.org/licenses/Apache-2.0")
                     }
                 }
@@ -108,12 +112,12 @@ publishing {
                     }
                 }
                 scm {
-                    url.set("https://github.com/$githubRepo.git")
-                    connection.set("scm:git:git://github.com/$githubRepo.git")
-                    developerConnection.set("scm:git:git://github.com/#$githubRepo.git")
+                    url.set("https://github.com/${Meta.githubRepo}.git")
+                    connection.set("scm:git:git://github.com/${Meta.githubRepo}.git")
+                    developerConnection.set("scm:git:git://github.com/#${Meta.githubRepo}.git")
                 }
                 issueManagement {
-                    url.set("https://github.com/$githubRepo/issues")
+                    url.set("https://github.com/${Meta.githubRepo}/issues")
                 }
             }
         }
@@ -121,7 +125,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/$githubRepo")
+            url = uri("https://maven.pkg.github.com/${Meta.githubRepo}")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
