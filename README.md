@@ -13,13 +13,15 @@ of store or data classes which you create or fetch in the presenter.
 
 ### View
 
-The view is a simple interface with just a single property you need to implement (`ViewContent` is just a type alias for `RenderContext.() -> Unit`).
+The view is a simple interface with just a single property you need to implement:
 
 ```kotlin
 interface View {
     val content: ViewContent
 }
 ``` 
+
+`ViewContent` is a type alias for `RenderContext.() -> Unit`.
 
 A view should just define the visual representation and should not contain business logic. A view is always bound to a specific presenter. If you need a reference to the presenter in the view, you can implement an additional interface:
 
@@ -102,7 +104,7 @@ in the lifecycle of a presenter:
 
 ### Place Management
 
-To navigate between presenters and its views use place requests, and a place manager which is based on 
+To navigate between presenters and its views use place requests, and the place manager which is based on 
 fritz2 [routing](https://docs.fritz2.dev/Routing.html).
 
 A place request is a simple data class with a token and an optional map of parameters:
@@ -111,7 +113,7 @@ A place request is a simple data class with a token and an optional map of param
 data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf())
 ```
 
-Place requests can be created using factory functions and are (un)marshalled to URL fragments:
+Place requests can be created using factory functions and are (de)serialized to URL fragments:
 
 ```kotlin
 // #apple
@@ -127,7 +129,7 @@ placeRequest("apple") {
 } 
 ``` 
 
-Place requests are handled by a place manager. There should be only one place manager per application. It is created by specifying a default place, and a function which is used if no presenter could be found for the requested place:
+Place requests are handled by the place manager. There should be only one place manager per application. It is created by specifying a default place, and a function which is used if no presenter could be found for the requested place:
 
 ```kotlin
 val placeManager = PlaceManager(placeRequest("apple")) {
@@ -173,7 +175,7 @@ When a place request is handled by the place manager,
 1. the place manager tries to find the presenter which matches the place request's token
 1. creates and binds the presenter (if necessary)
 1. calls `Presenter.hide()` for the current presenter (if any)
-1. calls `Presenter.prepareFromRequest()` for the new presenter
+1. calls `Presenter.prepareFromRequest()` for the new presenter using the current place request
 1. clears the element managed by the place manager
 1. attaches the elements of the new presenter's view
 1. calls `Presenter.show()` for the new presenter
@@ -222,28 +224,21 @@ fun main() {
         p { +"💣" }
     }
 
-    // let index.html be '<body id="target"></body>'
     render {
         main {
             nav {
-                button {
-                    +"apple"
-                    clicks.map { placeRequest("apple") } handledBy placeManager.router.navTo
-                }
-                button {
-                    +"banana"
-                    clicks.map { placeRequest("banana") } handledBy placeManager.router.navTo
-                }
-                button {
-                    +"pineapple"
-                    clicks.map { placeRequest("pineapple") } handledBy placeManager.router.navTo
+                arrayOf("apple", "banana", "pineapple").forEach {
+                    button {
+                        +it
+                        clicks.map { placeRequest(it) } handledBy placeManager.router.navTo
+                    }
                 }
             }
             section {
                 managedBy(placeManager)
             }
         }
-    }.mount("target")
+    }
 }
 ```
 
