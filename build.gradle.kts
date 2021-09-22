@@ -1,32 +1,31 @@
 import org.jetbrains.dokka.Platform
 import java.net.URL
 
+// ------------------------------------------------------ core
+
 plugins {
-    kotlin("js") version "1.4.31"
-    id("org.jetbrains.dokka") version "1.4.20"
+    kotlin("js") version Versions.kotlin
+    id("org.jetbrains.dokka") version Versions.dokka
     `maven-publish`
 }
 
 group = "dev.fritz2"
 version = "0.3.0"
 
-object Meta {
-    const val desc = "MVP implementation based on fritz2"
-    const val license = "Apache-2.0"
-    const val githubRepo = "hpehl/fritz2-mvp"
-}
+// ------------------------------------------------------ repositories
 
-object Versions {
-    const val fritz2 = "0.9"
-}
+val repositories = arrayOf(
+    "https://oss.sonatype.org/content/repositories/snapshots/",
+    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+)
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://oss.jfrog.org/artifactory/jfrog-dependencies")
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
-    jcenter()
+    repositories.forEach { maven(it) }
 }
+
+// ------------------------------------------------------ dependencies
 
 dependencies {
     implementation("dev.fritz2:core:${Versions.fritz2}")
@@ -34,19 +33,12 @@ dependencies {
 }
 
 kotlin {
-    js(BOTH) {
+    js {
         explicitApi()
         browser {
             testTask {
                 useKarma {
                     useChromeHeadless()
-                }
-            }
-        }
-        sourceSets {
-            named("main") {
-                languageSettings.apply {
-                    useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
                 }
             }
         }
