@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.promise
 
-@OptIn(DelicateCoroutinesApi::class)
+@DelicateCoroutinesApi
 fun <T> runTest(block: suspend () -> T): dynamic = GlobalScope.promise {
     delay(50)
     block()

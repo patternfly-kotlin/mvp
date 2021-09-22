@@ -6,11 +6,13 @@ import dev.fritz2.mvp.PresenterState.HIDE
 import dev.fritz2.mvp.PresenterState.PREPARE_FROM_REQUEST
 import dev.fritz2.mvp.PresenterState.SHOW
 import kotlinx.browser.document
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.delay
 import org.w3c.dom.HTMLButtonElement
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@DelicateCoroutinesApi
 class LifecycleTests {
 
     @Test

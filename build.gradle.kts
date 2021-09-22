@@ -32,8 +32,10 @@ dependencies {
     testImplementation(kotlin("test-js"))
 }
 
+// ------------------------------------------------------ kotlin/js
+
 kotlin {
-    js {
+    js(BOTH) {
         explicitApi()
         browser {
             testTask {
@@ -45,10 +47,14 @@ kotlin {
     }
 }
 
+// ------------------------------------------------------ source & javadoc
+
 val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
     from(kotlin.sourceSets.main.get().kotlin)
 }
+
+// ------------------------------------------------------ tasks
 
 tasks {
     dokkaHtml.configure {
@@ -76,6 +82,8 @@ tasks {
         }
     }
 }
+
+// ------------------------------------------------------ sign & publish
 
 publishing {
     publications {
