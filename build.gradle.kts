@@ -98,7 +98,6 @@ tasks {
                 noStdlibLink.set(false)
                 platform.set(Platform.js)
                 skipEmptyPackages.set(true)
-                includes.from("src/main/resources/module.md")
                 samples.from("src/main/kotlin/")
                 pluginsMapConfiguration.set(
                     mapOf("org.jetbrains.dokka.base.DokkaBase" to """{ "separateInheritedMembers": true}""")
@@ -112,10 +111,6 @@ tasks {
                 }
                 externalDocumentationLink {
                     url.set(URL("https://kotlin.github.io/kotlinx.coroutines/"))
-                }
-                perPackageOption {
-                    matchingRegex.set("org\\.patternfly\\.sample")
-                    suppress.set(true)
                 }
             }
         }
