@@ -2,7 +2,7 @@
 
 package dev.fritz2.sample
 
-import dev.fritz2.mvp.placeRequest
+import org.patternfly.mvp.placeRequest
 
 internal interface PlaceRequestSample {
 

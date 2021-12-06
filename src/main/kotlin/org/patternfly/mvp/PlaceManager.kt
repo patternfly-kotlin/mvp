@@ -1,11 +1,14 @@
-package dev.fritz2.mvp
+package org.patternfly.mvp
 
-import dev.fritz2.binding.mountSingle
 import dev.fritz2.dom.Tag
 import dev.fritz2.dom.WithDomNode
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.html.render
-import dev.fritz2.routing.*
+import dev.fritz2.routing.Route
+import dev.fritz2.routing.Router
+import dev.fritz2.routing.decodeURIComponent
+import dev.fritz2.routing.encodeURIComponent
+import dev.fritz2.routing.router
 import kotlinx.coroutines.flow.Flow
 import kotlinx.dom.clear
 import org.w3c.dom.HTMLElement
@@ -45,14 +48,15 @@ public fun placeRequest(token: String, params: MutableMap<String, String>.() -> 
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf()) {
 
     /**
-     * returns the [location hash](https://developer.mozilla.org/en-US/docs/Web/API/Location/hash) of this place request.
+     * returns the [location hash](https://developer.mozilla.org/en-US/docs/Web/API/Location/hash)
+     * of this place request.
      */
     public val hash: String
         get() = "#" + PlaceRequestRoute(this).serialize(this)
 }
 
 /**
- * [Route] typed to [PlaceRequest]. Contains the functions to [marshal] and [unmarshal] the [PlaceRequest]s.
+ * [Route] typed to [PlaceRequest]. Contains the functions to [serialize] and [deserialize] the [PlaceRequest]s.
  *
  * [PlaceRequest]s are marshaled to strings using the following format:
  *
@@ -145,28 +149,30 @@ public class PlaceManager(
         get() = currentPlaceRequest ?: defaultPlaceRequest
 
     internal fun <E : HTMLElement> manage(tag: Tag<E>) {
-        mountSingle(tag.job, placeRequests) { placeRequest, _ ->
-            error = false
-            tag.domNode.clear()
+        with(tag) {
+            placeRequests.render(into = this) { placeRequest ->
+                error = false
+                tag.domNode.clear()
 
-            val nonEmptyPlace = if (placeRequest.token.isEmpty()) defaultPlaceRequest else placeRequest
-            val presenter = Presenter.lookup<Presenter<View>>(nonEmptyPlace.token)
-            if (presenter != null) {
-                if (presenter !== currentPresenter) {
-                    currentPresenter?.hide()
-                }
-                currentPresenter = presenter
-                currentPlaceRequest = nonEmptyPlace
-                presenter.prepareFromRequest(placeRequest)
-                render(tag.domNode) {
-                    presenter.view.content(this)
-                    presenter.show()
-                }
-            } else {
-                error = true
-                console.error("No presenter found for $nonEmptyPlace!")
-                render(tag.domNode) {
-                    notFound.invoke(this, nonEmptyPlace)
+                val nonEmptyPlace = if (placeRequest.token.isEmpty()) defaultPlaceRequest else placeRequest
+                val presenter = Presenter.lookup<Presenter<View>>(nonEmptyPlace.token)
+                if (presenter != null) {
+                    if (presenter !== currentPresenter) {
+                        currentPresenter?.hide()
+                    }
+                    currentPresenter = presenter
+                    currentPlaceRequest = nonEmptyPlace
+                    presenter.prepareFromRequest(placeRequest)
+                    render(tag.domNode) {
+                        presenter.view.content(this)
+                        presenter.show()
+                    }
+                } else {
+                    error = true
+                    console.error("No presenter found for $nonEmptyPlace!")
+                    render(tag.domNode) {
+                        notFound.invoke(this, nonEmptyPlace)
+                    }
                 }
             }
         }

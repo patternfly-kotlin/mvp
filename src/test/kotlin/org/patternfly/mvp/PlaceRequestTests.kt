@@ -1,4 +1,4 @@
-package dev.fritz2.mvp
+package org.patternfly.mvp
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

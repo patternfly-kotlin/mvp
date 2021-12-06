@@ -4,7 +4,7 @@ MVP implementation based on [fritz2](https://www.fritz2.dev/).
 
 ## Building Blocks
 
-fritz2-mvp comes with just a few classes and provides a very lightweight and straight forward MVP implementation:
+MVP comes with just a few classes and provides a very lightweight and straight forward MVP implementation:
 
 ### Model
 
@@ -26,8 +26,8 @@ interface View {
 A view should just define the visual representation and should not contain business logic. A view is always bound to a specific presenter. If you need a reference to the presenter in the view, you can implement an additional interface:
 
 ```kotlin
-public interface WithPresenter<P : Presenter<View>> {
-    public val presenter: P
+interface WithPresenter<P : Presenter<View>> {
+    val presenter: P
 }
 ```
 
@@ -141,7 +141,7 @@ val placeManager = PlaceManager(placeRequest("apple")) {
 The place manager contains a `Router<PlaceRequest>` which you can use to navigate to places:
 
 ```kotlin
-val placeManager = ...
+val placeManager = PlaceManager(placeRequest("apple"))
 
 render {
     button {
@@ -154,7 +154,7 @@ render {
 Finally, you have to specify a tag which is used by the place manager to show the elements of the views:
 
 ```kotlin
-val placeManager = ...
+val placeManager = PlaceManager(placeRequest("apple"))
 
 render {
     nav {

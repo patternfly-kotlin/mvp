@@ -1,9 +1,9 @@
 package dev.fritz2.sample
 
 import dev.fritz2.dom.html.render
-import dev.fritz2.mvp.PlaceManager
-import dev.fritz2.mvp.managedBy
-import dev.fritz2.mvp.placeRequest
+import org.patternfly.mvp.PlaceManager
+import org.patternfly.mvp.managedBy
+import org.patternfly.mvp.placeRequest
 
 internal interface PlaceManagerSample {
 

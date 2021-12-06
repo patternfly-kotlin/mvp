@@ -1,4 +1,4 @@
-package dev.fritz2.mvp
+package org.patternfly.mvp
 
 import dev.fritz2.dom.html.RenderContext
 
@@ -60,6 +60,7 @@ public interface Presenter<out V : View> {
          *
          * If no presenter is found for [token], `null` is returned.
          */
+        @Suppress("NestedBlockDepth")
         public inline fun <reified P : Presenter<View>> lookup(token: String): P? {
             return if (token in instances) {
                 val presenter = instances[token]

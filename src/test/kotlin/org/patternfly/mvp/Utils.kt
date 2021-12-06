@@ -1,4 +1,4 @@
-package dev.fritz2.mvp
+package org.patternfly.mvp
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope

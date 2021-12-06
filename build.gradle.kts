@@ -1,16 +1,31 @@
 import org.jetbrains.dokka.Platform
 import java.net.URL
 
-// ------------------------------------------------------ core
+group = "org.patternfly"
+version = "0.3.0-SNAPSHOT"
 
-plugins {
-    kotlin("js") version Versions.kotlin
-    id("org.jetbrains.dokka") version Versions.dokka
-    `maven-publish`
+object Meta {
+    const val desc = "Kotlin MVP implementation based on fritz2"
+    const val license = "Apache-2.0"
+    const val githubRepo = "patternfly-kotlin/patternfly-mvp"
+    const val release = "https://s01.oss.sonatype.org/service/local/"
+    const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 }
 
-group = "dev.fritz2"
-version = "0.3.0"
+// ------------------------------------------------------ plugins
+
+// https://youtrack.jetbrains.com/issue/KTIJ-19369#focus=Comments-27-5181027.0-0
+@Suppress("DSL_SCOPE_VIOLATION", "UnstableApiUsage")
+plugins {
+    alias(libs.plugins.js)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.ktlintIdea)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.nexusPublish)
+    `maven-publish`
+    signing
+}
 
 // ------------------------------------------------------ repositories
 
@@ -28,7 +43,8 @@ repositories {
 // ------------------------------------------------------ dependencies
 
 dependencies {
-    implementation("dev.fritz2:core:${Versions.fritz2}")
+    implementation(libs.fritz2.core)
+    testImplementation(libs.kotlin.test)
     testImplementation(kotlin("test-js"))
 }
 
@@ -54,29 +70,52 @@ val sourcesJar by tasks.registering(Jar::class) {
     from(kotlin.sourceSets.main.get().kotlin)
 }
 
-// ------------------------------------------------------ tasks
+val javadocJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Javadoc JAR"
+    archiveClassifier.set("javadoc")
+    from(tasks.named("dokkaHtml"))
+}
+
+// ------------------------------------------------------ ktlint, detekt & dokka
 
 tasks {
+    ktlint {
+        filter {
+            exclude("**/org/patternfly/sample/**")
+        }
+    }
+
+    detekt.configure {
+        exclude("**/org/patternfly/sample/**")
+    }
+
     dokkaHtml.configure {
         dokkaSourceSets {
             named("main") {
+                includeNonPublic.set(false)
                 noJdkLink.set(false)
                 noStdlibLink.set(false)
-                includeNonPublic.set(false)
-                skipEmptyPackages.set(true)
                 platform.set(Platform.js)
+                skipEmptyPackages.set(true)
                 includes.from("src/main/resources/module.md")
-                samples.from("src/main/resources/")
+                samples.from("src/main/kotlin/")
+                pluginsMapConfiguration.set(
+                    mapOf("org.jetbrains.dokka.base.DokkaBase" to """{ "separateInheritedMembers": true}""")
+                )
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(URL("https://github.com/${Meta.githubRepo}/blob/master/src/main/kotlin/"))
+                    remoteUrl.set(
+                        URL("https://github.com/${Meta.githubRepo}/blob/main/src/main/kotlin/")
+                    )
                     remoteLineSuffix.set("#L")
                 }
                 externalDocumentationLink {
-                    this.url.set(URL("https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/"))
+                    url.set(URL("https://kotlin.github.io/kotlinx.coroutines/"))
                 }
-                externalDocumentationLink {
-                    this.url.set(URL("https://api.fritz2.dev/core/core/"))
+                perPackageOption {
+                    matchingRegex.set("org\\.patternfly\\.sample")
+                    suppress.set(true)
                 }
             }
         }
@@ -84,6 +123,22 @@ tasks {
 }
 
 // ------------------------------------------------------ sign & publish
+
+signing {
+    val signingKey = providers
+        .environmentVariable("GPG_SIGNING_KEY")
+        .forUseAtConfigurationTime()
+    val signingPassphrase = providers
+        .environmentVariable("GPG_SIGNING_PASSPHRASE")
+        .forUseAtConfigurationTime()
+
+    if (signingKey.isPresent && signingPassphrase.isPresent) {
+        useInMemoryPgpKeys(signingKey.get(), signingPassphrase.get())
+        val extension = extensions
+            .getByName("publishing") as PublishingExtension
+        sign(extension.publications)
+    }
+}
 
 publishing {
     publications {
@@ -93,6 +148,7 @@ publishing {
             version = project.version.toString()
             from(components["kotlin"])
             artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
             pom {
                 name.set(project.name)
                 description.set(Meta.desc)
@@ -122,13 +178,22 @@ publishing {
             }
         }
     }
+}
+
+nexusPublishing {
     repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/${Meta.githubRepo}")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+        sonatype {
+            nexusUrl.set(uri(Meta.release))
+            snapshotRepositoryUrl.set(uri(Meta.snapshot))
+            val ossrhUsername = providers
+                .environmentVariable("OSSRH_USERNAME")
+                .forUseAtConfigurationTime()
+            val ossrhPassword = providers
+                .environmentVariable("OSSRH_PASSWORD")
+                .forUseAtConfigurationTime()
+            if (ossrhUsername.isPresent && ossrhPassword.isPresent) {
+                username.set(ossrhUsername.get())
+                password.set(ossrhPassword.get())
             }
         }
     }

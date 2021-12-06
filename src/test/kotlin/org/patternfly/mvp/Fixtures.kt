@@ -1,11 +1,11 @@
-package dev.fritz2.mvp
+package org.patternfly.mvp
 
 import dev.fritz2.dom.html.render
-import dev.fritz2.mvp.PresenterState.BIND
-import dev.fritz2.mvp.PresenterState.HIDE
-import dev.fritz2.mvp.PresenterState.PREPARE_FROM_REQUEST
-import dev.fritz2.mvp.PresenterState.SHOW
 import kotlinx.browser.document
+import org.patternfly.mvp.PresenterState.BIND
+import org.patternfly.mvp.PresenterState.HIDE
+import org.patternfly.mvp.PresenterState.PREPARE_FROM_REQUEST
+import org.patternfly.mvp.PresenterState.SHOW
 
 // ------------------------------------------------------ constants
 
