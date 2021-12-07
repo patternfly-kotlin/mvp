@@ -1,11 +1,11 @@
-package dev.fritz2.sample
+package org.patternfly.mvp.sample
 
 import dev.fritz2.dom.html.render
 import org.patternfly.mvp.PlaceManager
 import org.patternfly.mvp.managedBy
 import org.patternfly.mvp.placeRequest
 
-internal interface PlaceManagerSample {
+internal class PlaceManagerSample {
 
     fun typicalSetup() {
         val placeManager = PlaceManager(placeRequest("apple")) {

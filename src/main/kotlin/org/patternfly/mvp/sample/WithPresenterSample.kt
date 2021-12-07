@@ -1,6 +1,4 @@
-@file:Suppress("UNUSED_VARIABLE")
-
-package dev.fritz2.sample
+package org.patternfly.mvp.sample
 
 import org.patternfly.mvp.Presenter
 import org.patternfly.mvp.View
@@ -8,7 +6,7 @@ import org.patternfly.mvp.ViewContent
 import org.patternfly.mvp.WithPresenter
 
 
-internal interface WithPresenterSample {
+internal class WithPresenterSample {
 
     // object used for documentation purposes only
     object WithPresenterSample {

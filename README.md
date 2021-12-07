@@ -1,5 +1,12 @@
 # Fritz2 MVP
 
+[![GitHub Super-Linter](https://github.com/patternfly-kotlin/mvp/workflows/lint/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![Detekt](https://github.com/patternfly-kotlin/mvp/workflows/detekt/badge.svg)](https://detekt.github.io/detekt/index.html)
+[![Build Passing](https://github.com/patternfly-kotlin/mvp/workflows/build/badge.svg)](https://github.com/patternfly-kotlin/patternfly-fritz2/actions)
+[![API Docs](https://img.shields.io/badge/api-docs-brightgreen)](https://patternfly-kotlin.github.io/mvp/mvp/)
+[![IR](https://img.shields.io/badge/Kotlin%2FJS-IR%20supported-yellow)](https://kotl.in/jsirsupported)
+[![Download](https://img.shields.io/maven-central/v/org.patternfly/patternfly-fritz2)](https://search.maven.org/search?q=g:org.patternfly%20AND%20a:mvp)
+
 MVP implementation based on [fritz2](https://www.fritz2.dev/).
 
 ## Building Blocks

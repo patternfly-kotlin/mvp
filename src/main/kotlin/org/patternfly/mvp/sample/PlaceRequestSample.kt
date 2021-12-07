@@ -1,10 +1,10 @@
 @file:Suppress("UNUSED_VARIABLE")
 
-package dev.fritz2.sample
+package org.patternfly.mvp.sample
 
 import org.patternfly.mvp.placeRequest
 
-internal interface PlaceRequestSample {
+internal class PlaceRequestSample {
 
     fun placeRequests() {
         val home = placeRequest("home")

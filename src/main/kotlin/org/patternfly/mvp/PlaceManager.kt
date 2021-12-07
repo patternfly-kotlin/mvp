@@ -34,7 +34,6 @@ public fun placeRequest(token: String, vararg params: Pair<String, String>): Pla
 /**
  * Helper function to build [PlaceRequest]s.
  */
-@ExperimentalStdlibApi
 public fun placeRequest(token: String, params: MutableMap<String, String>.() -> Unit = {}): PlaceRequest =
     PlaceRequest(token, buildMap(params))
 
@@ -43,7 +42,7 @@ public fun placeRequest(token: String, params: MutableMap<String, String>.() -> 
  *
  * You can use one of the builder functions to create place requests.
  *
- * @sample dev.fritz2.sample.PlaceRequestSample.placeRequests
+ * @sample org.patternfly.mvp.sample.PlaceRequestSample.placeRequests
  */
 public data class PlaceRequest(val token: String, val params: Map<String, String> = mapOf()) {
 
@@ -64,7 +63,7 @@ public data class PlaceRequest(val token: String, val params: Map<String, String
  * token[;key=value]
  * ```
  *
- * @sample dev.fritz2.sample.PlaceRequestSample.marshal
+ * @sample org.patternfly.mvp.sample.PlaceRequestSample.marshal
  */
 public class PlaceRequestRoute(override val default: PlaceRequest) : Route<PlaceRequest> {
 
@@ -117,7 +116,7 @@ public fun <E : HTMLElement> Tag<E>.managedBy(placeManager: PlaceManager) {
  * @param defaultPlaceRequest the default / initial place request
  * @param notFound a function to show content for places which are not bound to a presenter
  *
- * @sample dev.fritz2.sample.PlaceManagerSample.typicalSetup
+ * @sample org.patternfly.mvp.sample.PlaceManagerSample.typicalSetup
  */
 public class PlaceManager(
     private val defaultPlaceRequest: PlaceRequest,

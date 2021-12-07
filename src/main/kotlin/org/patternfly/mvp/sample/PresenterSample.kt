@@ -1,10 +1,10 @@
-package dev.fritz2.sample
+package org.patternfly.mvp.sample
 
 import org.patternfly.mvp.Presenter
 import org.patternfly.mvp.View
 import org.patternfly.mvp.ViewContent
 
-internal interface PresenterSample {
+internal class PresenterSample {
 
     fun presenterView() {
         class AppleView : View {

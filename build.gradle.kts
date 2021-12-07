@@ -7,7 +7,7 @@ version = "0.3.0-SNAPSHOT"
 object Meta {
     const val desc = "Kotlin MVP implementation based on fritz2"
     const val license = "Apache-2.0"
-    const val githubRepo = "patternfly-kotlin/patternfly-mvp"
+    const val githubRepo = "patternfly-kotlin/mvp"
     const val release = "https://s01.oss.sonatype.org/service/local/"
     const val snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 }
@@ -82,12 +82,12 @@ val javadocJar by tasks.creating(Jar::class) {
 tasks {
     ktlint {
         filter {
-            exclude("**/org/patternfly/sample/**")
+            exclude("**/org/patternfly/mvp/sample/**")
         }
     }
 
     detekt.configure {
-        exclude("**/org/patternfly/sample/**")
+        exclude("**/org/patternfly/mvp/sample/**")
     }
 
     dokkaHtml.configure {
@@ -111,6 +111,10 @@ tasks {
                 }
                 externalDocumentationLink {
                     url.set(URL("https://kotlin.github.io/kotlinx.coroutines/"))
+                }
+                perPackageOption {
+                    matchingRegex.set("org\\.patternfly\\.mvp\\.sample")
+                    suppress.set(true)
                 }
             }
         }
