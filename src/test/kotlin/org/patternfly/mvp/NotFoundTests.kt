@@ -21,13 +21,13 @@ class NotFoundTests {
                 li {
                     button(id = "apple") {
                         +"apple"
-                        clicks.map { PlaceRequest("apple") } handledBy placeManager.router.navTo
+                        clicks.map { PlaceRequest("apple") } handledBy placeManager.navTo
                     }
                 }
                 li {
                     button(id = "404") {
                         +"404"
-                        clicks.map { PlaceRequest("404") } handledBy placeManager.router.navTo
+                        clicks.map { PlaceRequest("404") } handledBy placeManager.navTo
                     }
                 }
             }

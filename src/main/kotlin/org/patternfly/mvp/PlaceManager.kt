@@ -8,8 +8,6 @@ import dev.fritz2.routing.Route
 import dev.fritz2.routing.Router
 import dev.fritz2.routing.decodeURIComponent
 import dev.fritz2.routing.encodeURIComponent
-import dev.fritz2.routing.router
-import kotlinx.coroutines.flow.Flow
 import kotlinx.dom.clear
 import org.w3c.dom.HTMLElement
 
@@ -124,20 +122,11 @@ public class PlaceManager(
         h1 { +"404" }
         p { +"${it.token} not found" }
     }
-) {
+) : Router<PlaceRequest>(PlaceRequestRoute(defaultPlaceRequest)) {
 
     private var error: Boolean = false
     private var currentPresenter: Presenter<*>? = null
     private var currentPlaceRequest: PlaceRequest? = null
-
-    /** Provides access to the router. */
-    public val router: Router<PlaceRequest> = router(PlaceRequestRoute(defaultPlaceRequest))
-
-    /**
-     * Flow of [PlaceRequest]s.
-     */
-    public val placeRequests: Flow<PlaceRequest>
-        get() = router.data
 
     /** The current presenter. */
     public val presenter: Presenter<*>?
@@ -149,7 +138,7 @@ public class PlaceManager(
 
     internal fun <E : HTMLElement> manage(tag: Tag<E>) {
         with(tag) {
-            placeRequests.render(into = this) { placeRequest ->
+            data.render(into = this) { placeRequest ->
                 error = false
                 tag.domNode.clear()
 

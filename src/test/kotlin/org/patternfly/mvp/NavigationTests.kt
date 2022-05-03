@@ -22,19 +22,19 @@ class NavigationTests {
                 li {
                     button(id = "apple") {
                         +"apple"
-                        clicks.map { PlaceRequest("apple") } handledBy placeManager.router.navTo
+                        clicks.map { PlaceRequest("apple") } handledBy placeManager.navTo
                     }
                 }
                 li {
                     button(id = "banana") {
                         +"banana"
-                        clicks.map { PlaceRequest("banana") } handledBy placeManager.router.navTo
+                        clicks.map { PlaceRequest("banana") } handledBy placeManager.navTo
                     }
                 }
                 li {
                     button(id = "pineapple") {
                         +"pineapple"
-                        clicks.map { PlaceRequest("pineapple") } handledBy placeManager.router.navTo
+                        clicks.map { PlaceRequest("pineapple") } handledBy placeManager.navTo
                     }
                 }
             }

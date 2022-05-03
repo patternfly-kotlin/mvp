@@ -25,7 +25,7 @@ class LifecycleTests {
                 li {
                     button(id = "apple") {
                         +"apple"
-                        clicks.map { PlaceRequest("apple") } handledBy placeManager.router.navTo
+                        clicks.map { PlaceRequest("apple") } handledBy placeManager.navTo
                     }
                 }
                 li {
@@ -36,13 +36,13 @@ class LifecycleTests {
                                 "apple",
                                 mapOf("type" to "gala")
                             )
-                        } handledBy placeManager.router.navTo
+                        } handledBy placeManager.navTo
                     }
                 }
                 li {
                     button(id = "banana") {
                         +"banana"
-                        clicks.map { PlaceRequest("banana") } handledBy placeManager.router.navTo
+                        clicks.map { PlaceRequest("banana") } handledBy placeManager.navTo
                     }
                 }
             }

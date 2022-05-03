@@ -29,19 +29,19 @@ class PlaceManagerTests {
                 li {
                     button(id = "red-delicious") {
                         +"red delicious"
-                        clicks.map { redDeliciousPlaceRequest } handledBy placeManager.router.navTo
+                        clicks.map { redDeliciousPlaceRequest } handledBy placeManager.navTo
                     }
                 }
                 li {
                     button(id = "gala") {
                         +"gala"
-                        clicks.map { galaPlaceRequest } handledBy placeManager.router.navTo
+                        clicks.map { galaPlaceRequest } handledBy placeManager.navTo
                     }
                 }
                 li {
                     button(id = "granny-smith") {
                         +"granny smith"
-                        clicks.map { grannySmithPlaceRequest } handledBy placeManager.router.navTo
+                        clicks.map { grannySmithPlaceRequest } handledBy placeManager.navTo
                     }
                 }
             }

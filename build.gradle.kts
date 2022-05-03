@@ -51,7 +51,7 @@ dependencies {
 // ------------------------------------------------------ kotlin/js
 
 kotlin {
-    js(BOTH) {
+    js(IR) {
         explicitApi()
         browser {
             testTask {
